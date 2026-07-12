@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garagem Virtual - Gestão de Acervo Diecast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#090D1A',
+                        darkCard: '#0F1524',
+                        darkBorder: '#1E293B',
+                        brandGreen: '#10B981',
+                        brandCyan: '#06B6D4',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #090D1A; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+    </style>
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg">
+
+    <!-- CABEÇALHO -->
+    <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brandGreen to-brandCyan flex items-center justify-center text-darkBg shadow-lg shadow-brandGreen/20">
+                    <i class="fa-solid fa-car-side text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Garagem Virtual</h1>
+                    <p class="text-xs text-slate-400 font-medium">Controle de Acervo Avançado</p>
+                </div>
+            </div>
+            
+            <nav class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-darkBorder">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md">
+                    <i class="fa-solid fa-chart-pie"></i> Painel
+                </button>
+                <button onclick="switchTab('inventario')" id="btn-inventario" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked"></i> Inventário
+                </button>
+                <button onclick="switchTab('cadastro')" id="btn-cadastro" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Novo Item
+                </button>
+                <button onclick="switchTab('ajustes')" id="btn-ajustes" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-cloud"></i> Nuvem / Config
+                </button>
+            </nav>
+
+            <div id="cloud-status-indicator" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/40 border border-darkBorder text-xs text-blue-400 font-medium">
+                <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                <span id="status-text">Modo Local Ativo</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ÁREA PRINCIPAL -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+        
+        <!-- DASHBOARD -->
+        <section id="tab-dashboard" class="tab-content block space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Total de Carrinhos</p>
+                        <h3 id="stat-total-items" class="font-display font-bold text-3xl mt-1 text-slate-100">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-brandGreen/10 flex items-center justify-center text-brandGreen"><i class="fa-solid fa-car text-xl"></i></div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Investimento Total</p>
+                        <h3 id="stat-total-investment" class="font-display font-bold text-3xl mt-1 text-brandGreen">R$ 0,00</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-brandGreen/10 flex items-center justify-center text-brandGreen"><i class="fa-solid fa-wallet text-xl"></i></div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Fabricantes</p>
+                        <h3 id="stat-total-brands" class="font-display font-bold text-3xl mt-1 text-slate-100">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-brandCyan/10 flex items-center justify-center text-brandCyan"><i class="fa-solid fa-tags text-xl"></i></div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Sets Completos</p>
+                        <h3 id="stat-set-progress" class="font-display font-bold text-3xl mt-1 text-slate-100">0%</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500"><i class="fa-solid fa-circle-check text-xl"></i></div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 lg:col-span-2">
+                    <h3 class="font-display font-bold text-lg mb-4 flex items-center gap-2 text-slate-200"><i class="fa-solid fa-chart-column text-brandGreen"></i> Distribuição por Fabricante (Top 5)</h3>
+                    <div id="brand-distribution-container" class="space-y-4"></div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-6">
+                    <h3 class="font-display font-bold text-lg mb-4 flex items-center gap-2 text-slate-200"><i class="fa-solid fa-compress text-brandCyan"></i> Divisão por Escalas</h3>
+                    <div id="scale-distribution-container" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6">
+                <h3 class="font-display font-bold text-lg mb-4 flex items-center gap-2 text-slate-200"><i class="fa-solid fa-clock-rotate-left text-brandGreen"></i> Adicionados Recentemente</h3>
+                <div id="recent-items-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- INVENTÁRIO -->
+        <section id="tab-inventario" class="tab-content hidden space-y-6">
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center">
+                <div class="relative w-full md:flex-grow">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Buscar por modelo, SKU, marca, série/coleção..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-10 pr-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandGreen transition">
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full md:w-auto">
+                    <select id="filter-brand" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
+                    <select id="filter-scale" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
+                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
+                        <option value="">Qualquer Estado</option>
+                        <option value="Na cartela">Na cartela</option>
+                        <option value="Loose">Solto (Loose)</option>
+                        <option value="Na caixa">Na caixa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <p id="inventory-counter" class="text-sm text-slate-400 font-medium">Exibindo 0 carrinhos</p>
+                <div class="flex items-center gap-1.5 bg-slate-950 border border-darkBorder p-1 rounded-xl">
+                    <button onclick="toggleViewMode('grid')" id="btn-view-grid" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-darkBg"><i class="fa-solid fa-grip"></i> Grid</button>
+                    <button onclick="toggleViewMode('table')" id="btn-view-table" class="px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200"><i class="fa-solid fa-list"></i> Lista</button>
+                </div>
+            </div>
+            
+            <div id="inventory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+
+            <div id="inventory-table-container" class="hidden overflow-x-auto border border-darkBorder rounded-xl bg-darkCard">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-950 text-slate-300 text-xs uppercase tracking-wider font-semibold border-b border-darkBorder">
+                            <th class="p-4">Foto</th>
+                            <th class="p-4">Marca</th>
+                            <th class="p-4">Modelo</th>
+                            <th class="p-4">Série / Lote</th>
+                            <th class="p-4">Escala</th>
+                            <th class="p-4">Preço</th>
+                            <th class="p-4">Estado</th>
+                            <th class="p-4">Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body" class="divide-y divide-darkBorder text-sm text-slate-300"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- FORMULÁRIO -->
+        <section id="tab-cadastro" class="tab-content hidden max-w-3xl mx-auto">
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-6">
+                <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
+                <form id="car-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                    <input type="hidden" id="edit-id">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Código de Barras / SKU</label>
+                            <input type="text" id="form-sku" onblur="checkDuplicateSku()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                            <p id="sku-warning" class="hidden text-xs text-amber-500 font-semibold mt-1">SKU já consta na sua Garagem!</p>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider">Fabricante (Marca)</label>
+                                <button type="button" onclick="showNewBrandModal()" class="text-xs text-brandGreen font-bold hover:underline bg-transparent border-none p-0 cursor-pointer">+ Nova Marca</button>
+                            </div>
+                            <select id="form-brand" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen"></select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Modelo do Carro *</label>
+                            <input type="text" id="form-model" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados, Boulevard)</label>
+                            <input type="text" id="form-series" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série</label>
+                            <input type="text" id="form-series-number" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Ano</label>
+                            <input type="number" id="form-year" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider">Escala</label>
+                                <button type="button" onclick="showNewScaleModal()" class="text-xs text-brandCyan font-bold hover:underline bg-transparent border-none p-0 cursor-pointer">+ Outra</button>
+                            </div>
+                            <select id="form-scale" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Estado</label>
+                            <select id="form-condition" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen">
+                                <option value="Na cartela">Na cartela</option>
+                                <option value="Loose">Loose (Solto)</option>
+                                <option value="Na caixa">Na caixa</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Preço Pago (R$)</label>
+                            <input type="number" step="0.01" id="form-price" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Data de Aquisição</label>
+                            <input type="date" id="form-date" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Status do Set</label>
+                            <select id="form-set-status" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none">
+                                <option value="Completo">Completo</option>
+                                <option value="Em progresso">Em progresso</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Notas / Observações</label>
+                        <textarea id="form-notes" rows="2" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (Até 3 Fotos)</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" id="file-photo1" onchange="previewImage(event, 1)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img1" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder1" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Frente</span></div>
+                                <button type="button" onclick="clearImage(1)" id="btn-clear1" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" id="file-photo2" onchange="previewImage(event, 2)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img2" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder2" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Traseira</span></div>
+                                <button type="button" onclick="clearImage(2)" id="btn-clear2" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" id="file-photo3" onchange="previewImage(event, 3)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img3" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder3" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Chassi</span></div>
+                                <button type="button" onclick="clearImage(3)" id="btn-clear3" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 justify-end pt-4 border-t border-darkBorder">
+                        <button type="button" onclick="switchTab('inventario')" class="px-6 py-2.5 rounded-xl border border-darkBorder text-sm font-semibold text-slate-300">Cancelar</button>
+                        <button type="submit" class="px-8 py-2.5 rounded-xl bg-gradient-to-tr from-brandGreen to-brandCyan text-darkBg text-sm font-bold shadow-md shadow-brandGreen/20">Salvar Miniatura</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- CONFIGURAÇÕES -->
+        <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
+                <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
+                <p class="text-xs text-slate-400">Insira suas chaves caso queira usar a nuvem automática futuramente. Sem elas o app opera localmente de forma isolada e segura.</p>
+                
+                <div class="grid grid-cols-1 gap-3 bg-slate-950 p-4 rounded-xl border border-darkBorder">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Google Client ID</label>
+                        <input type="text" id="cfg-client-id" onchange="saveCloudKeys()" placeholder="Cole seu Client ID" class="w-full bg-darkCard border border-darkBorder rounded-lg px-3 py-2 text-xs text-slate-200">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 mb-1">Google API Key</label>
+                        <input type="password" id="cfg-api-key" onchange="saveCloudKeys()" placeholder="Cole sua API Key" class="w-full bg-darkCard border border-darkBorder rounded-lg px-3 py-2 text-xs text-slate-200">
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <p class="text-sm font-bold text-slate-200" id="gdrive-user">Status: Desconectado</p>
+                        <p class="text-xs text-slate-500" id="gdrive-sync-time">Último backup: Nunca</p>
+                    </div>
+                    <button id="btn-google-auth" onclick="handleAuthClick()" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition flex items-center gap-2">
+                        <i class="fa-brands fa-google"></i> Conectar Google Drive
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <button onclick="forceSyncUpload()" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio</button>
+                    <button onclick="forceSyncDownload()" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados</button>
+                </div>
+            </div>
+
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
+                <h2 class="font-display font-bold text-xl">Segurança Manual Local</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="exportDatabaseJSON()" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-export"></i> Salvar Cópia .JSON</button>
+                    <button onclick="exportCollectionCSV()" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-csv"></i> Exportar Excel (.CSV)</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DETALHES -->
+    <div id="details-modal" class="fixed inset-0 bg-darkBg/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex justify-between items-center p-4 border-b border-darkBorder bg-slate-950/40">
+                <div><h3 id="modal-brand-model" class="font-display font-bold text-lg text-slate-100"></h3><p id="modal-sku" class="text-xs text-slate-400"></p></div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-darkBorder text-slate-400 hover:text-red-400 flex items-center justify-center"><i class="fa-solid fa-x"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+                <!-- Grade de miniaturas clicáveis que abrem o Lightbox -->
+                <div class="grid grid-cols-3 gap-3" id="modal-photos-grid"></div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fabricante</p><p id="modal-brand" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Série / Lote</p><p id="modal-series" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Nº na Série</p><p id="modal-series-number" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Ano</p><p id="modal-year" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Escala</p><p id="modal-scale" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Preço Pago</p><p id="modal-price" class="font-semibold text-brandGreen"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Estado</p><p id="modal-condition" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Data</p><p id="modal-date" class="font-semibold text-slate-200"></p></div>
+                    <div class="col-span-2 bg-slate-950 p-3 rounded-xl border border-darkBorder"><p class="text-[10px] text-slate-500 font-bold uppercase">Notas</p><p id="modal-notes" class="text-xs text-slate-300 mt-1 whitespace-pre-wrap"></p></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-darkBorder bg-slate-950/40 flex justify-between">
+                <button id="modal-btn-delete" class="px-4 py-2 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500 font-bold text-xs"><i class="fa-solid fa-trash"></i> Excluir</button>
+                <button id="modal-btn-edit" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg font-bold text-xs"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DO LIGHTBOX (ZOOM E NAVEGAÇÃO DE FOTOS) -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-50 p-4 select-none">
+        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-left"></i></button>
+        <img id="lightbox-img" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl">
+        <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- MODAIS DE CADASTRO ADICIONAL -->
+    <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
+            <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
+            <input type="text" id="new-brand-input" placeholder="Ex: Tarmac Works" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandGreen">
+            <div class="flex gap-2 justify-end">
+                <button onclick="closeNewBrandModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
+                <button onclick="saveNewBrand()" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg text-xs font-bold">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
+            <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
+            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            <div class="flex gap-2 justify-end">
+                <button onclick="closeNewScaleModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
+                <button onclick="saveNewScale()" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let CLIENT_ID = localStorage.getItem('cfg_client_id') || ''; 
+        let API_KEY = localStorage.getItem('cfg_api_key') || '';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
+
+        let tokenClient = null; let isGoogleAuthenticated = false; let db = null;
+        let marcas = ['Hot Wheels', 'Matchbox', 'Majorette', 'Greenlight', 'Mini GT', 'Maisto', 'Jada Toys', 'M2 Machines', 'Auto World'];
+        let escalas = ['1:64', '1:43', '1:32', '1:18', 'Outra'];
+        let colecao = [];
+        let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
+        
+        // Controle de fotos do Lightbox
+        let currentActivePhotos = [];
+        let currentLightboxIndex = 0;
+
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('GaragemVirtualDB_V5', 1);
+                request.onerror = (e) => reject(e.target.errorCode);
+                request.onsuccess = (e) => { db = e.target.result; resolve(); };
+                request.onupgradeneeded = (e) => {
+                    const dbInstance = e.target.result;
+                    if (!dbInstance.objectStoreNames.contains('colecao')) dbInstance.createObjectStore('colecao', { keyPath: 'id' });
+                    if (!dbInstance.objectStoreNames.contains('marcas_custom')) dbInstance.createObjectStore('marcas_custom', { keyPath: 'nome' });
+                    if (!dbInstance.objectStoreNames.contains('escalas_custom')) dbInstance.createObjectStore('escalas_custom', { keyPath: 'nome' });
+                };
+            });
+        }
+
+        async function loadAppData() {
+            try {
+                await initDB();
+                await loadCustomLists();
+                await loadCollection();
+                populateBrandSelects();
+                populateScaleSelects();
+                renderAll();
+                
+                document.getElementById('cfg-client-id').value = CLIENT_ID;
+                document.getElementById('cfg-api-key').value = API_KEY;
+                if (navigator.onLine && CLIENT_ID && API_KEY) injectGoogleScripts();
+            } catch (e) { console.error(e); }
+        }
+
+        function loadCustomLists() {
+            return new Promise((resolve) => {
+                const tx = db.transaction(['marcas_custom', 'escalas_custom'], 'readonly');
+                tx.objectStore('marcas_custom').getAll().onsuccess = (e) => {
+                    const customB = e.target.result.map(b => b.nome);
+                    marcas = Array.from(new Set([...marcas, ...customB])).sort();
+                };
+                tx.objectStore('escalas_custom').getAll().onsuccess = (e) => {
+                    const customS = e.target.result.map(s => s.nome);
+                    escalas = Array.from(new Set([...escalas.filter(x => x !== 'Outra'), ...customS, 'Outra']));
+                    resolve();
+                };
+            });
+        }
+
+        function loadCollection() {
+            return new Promise((resolve) => {
+                db.transaction(['colecao'], 'readonly').objectStore('colecao').getAll().onsuccess = (e) => {
+                    colecao = e.target.result || [];
+                    resolve();
+                };
+            });
+        }
+
+        function populateBrandSelects() {
+            ['filter-brand', 'form-brand'].forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = `<option value="">${id === 'filter-brand' ? 'Todas Marcas' : 'Selecione...'}</option>`;
+                marcas.forEach(m => { select.innerHTML += `<option value="${m}">${m}</option>`; });
+            });
+        }
+
+        function populateScaleSelects() {
+            ['filter-scale', 'form-scale'].forEach(id => {
+                const select = document.getElementById(id);
+                select.innerHTML = `<option value="">${id === 'filter-scale' ? 'Todas Escalas' : 'Selecione...'}</option>`;
+                escalas.forEach(s => { select.innerHTML += `<option value="${s}">${s}</option>`; });
+            });
+        }
+
+        function toggleViewMode(mode) {
+            viewMode = mode;
+            const gridBtn = document.getElementById('btn-view-grid');
+            const tableBtn = document.getElementById('btn-view-table');
+            
+            if(mode === 'grid') {
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-darkBg";
+                tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+            } else {
+                tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-darkBg";
+                gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+            }
+            applyFilters();
+        }
+
+        function showNewBrandModal() { document.getElementById('new-brand-modal').classList.remove('hidden'); document.getElementById('new-brand-modal').classList.add('flex'); }
+        function closeNewBrandModal() { document.getElementById('new-brand-modal').classList.add('hidden'); document.getElementById('new-brand-input').value = ''; }
+        function saveNewBrand() {
+            const v = document.getElementById('new-brand-input').value.trim(); if (!v) return;
+            const tx = db.transaction(['marcas_custom'], 'readwrite'); tx.objectStore('marcas_custom').put({nome: v});
+            tx.oncomplete = async () => { await loadCustomLists(); populateBrandSelects(); document.getElementById('form-brand').value = v; closeNewBrandModal(); };
+        }
+
+        function showNewScaleModal() { document.getElementById('new-scale-modal').classList.remove('hidden'); document.getElementById('new-scale-modal').classList.add('flex'); }
+        function closeNewScaleModal() { document.getElementById('new-scale-modal').classList.add('hidden'); document.getElementById('new-scale-input').value = ''; }
+        function saveNewScale() {
+            const v = document.getElementById('new-scale-input').value.trim(); if (!v) return;
+            const tx = db.transaction(['escalas_custom'], 'readwrite'); tx.objectStore('escalas_custom').put({nome: v});
+            tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); applyFilters(); };
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const eid = document.getElementById('edit-id').value;
+            const item = {
+                id: eid || 'car-' + Date.now(),
+                sku: document.getElementById('form-sku').value.trim(),
+                brand: document.getElementById('form-brand').value,
+                model: document.getElementById('form-model').value.trim(),
+                series: document.getElementById('form-series').value.trim(),
+                seriesNumber: document.getElementById('form-series-number').value.trim(),
+                year: document.getElementById('form-year').value,
+                scale: document.getElementById('form-scale').value,
+                condition: document.getElementById('form-condition').value,
+                price: parseFloat(document.getElementById('form-price').value) || 0,
+                date: document.getElementById('form-date').value || new Date().toISOString().split('T')[0],
+                setStatus: document.getElementById('form-set-status').value,
+                notes: document.getElementById('form-notes').value.trim(),
+                photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
+            };
+
+            const tx = db.transaction(['colecao'], 'readwrite');
+            tx.objectStore('colecao').put(item);
+            tx.oncomplete = async () => { await loadCollection(); resetForm(); switchTab('inventario'); await pushToCloud(); };
+        }
+
+        function calculateMetrics() {
+            document.getElementById('stat-total-items').textContent = colecao.length;
+            const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
+            document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+            document.getElementById('stat-total-brands').textContent = new Set(colecao.map(i => i.brand)).size;
+            const comps = colecao.filter(i => i.setStatus === 'Completo').length;
+            document.getElementById('stat-set-progress').textContent = colecao.length > 0 ? Math.round((comps / colecao.length) * 100) + '%' : '0%';
+            renderDashboardChartsAndRecents();
+        }
+
+        function renderDashboardChartsAndRecents() {
+            const bCounts = {}; colecao.forEach(i => bCounts[i.brand] = (bCounts[i.brand] || 0) + 1);
+            const topB = Object.entries(bCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+            const container = document.getElementById('brand-distribution-container');
+            container.innerHTML = topB.length === 0 ? '<p class="text-xs text-slate-500 italic py-4">Insira registros para gerar as métricas.</p>' : '';
+            const maxVal = topB.length > 0 ? topB[0][1] : 1;
+            topB.forEach(([b, c]) => {
+                const pct = Math.round((c/colecao.length)*100);
+                const wPct = Math.max(10, Math.round((c/maxVal)*100));
+                container.innerHTML += `<div class="space-y-1"><div class="flex justify-between text-xs font-semibold"><span>${b}</span><span class="text-brandGreen">${c} un (${pct}%)</span></div><div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-darkBorder"><div class="bg-gradient-to-r from-brandGreen to-brandCyan h-full" style="width: ${wPct}%"></div></div></div>`;
+            });
+
+            const sCounts = {}; colecao.forEach(i => sCounts[i.scale] = (sCounts[i.scale] || 0) + 1);
+            const sContainer = document.getElementById('scale-distribution-container'); sContainer.innerHTML = '';
+            Object.entries(sCounts).sort((a,b)=>b[1]-a[1]).forEach(([s, c]) => {
+                const pct = Math.round((c/colecao.length)*100);
+                sContainer.innerHTML += `<div class="flex items-center gap-4 text-xs"><div class="w-12 text-slate-400 font-bold text-right">${s}</div><div class="flex-grow bg-slate-950 h-2 rounded-full border border-darkBorder overflow-hidden"><div class="bg-brandCyan h-full" style="width:${pct}%"></div></div><div class="w-12 text-right font-semibold">${pct}%</div></div>`;
+            });
+
+            const rContainer = document.getElementById('recent-items-container'); rContainer.innerHTML = '';
+            const recents = [...colecao].reverse().slice(0, 5);
+            if(recents.length === 0) rContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full text-center">Nenhum veículo adicionado recentemente.</p>';
+            recents.forEach(item => {
+                const p = item.photos[0] || 'https://placehold.co/150x150/0F1524/10B981?text=Sem+Foto';
+                rContainer.innerHTML += `<div onclick="showDetails('${item.id}')" class="bg-slate-950 border border-darkBorder rounded-xl p-2.5 cursor-pointer hover:border-brandGreen flex flex-col justify-between group"><img src="${p}" class="w-full aspect-video object-cover rounded-lg mb-2 group-hover:scale-105 transition"><div class="truncate"><span class="text-[9px] text-brandGreen font-bold tracking-wider uppercase">${item.brand}</span><h4 class="text-xs font-bold truncate text-slate-200">${item.model}</h4></div></div>`;
+            });
+        }
+
+        function applyFilters() {
+            const q = document.getElementById('filter-search').value.toLowerCase();
+            const brand = document.getElementById('filter-brand').value;
+            const scale = document.getElementById('filter-scale').value;
+            const cond = document.getElementById('filter-condition').value;
+
+            // Filtro varre Modelo, Marca, SKU e agora o campo SÉRIE/COLEÇÃO perfeitamente
+            const filtered = colecao.filter(i => {
+                return (i.model.toLowerCase().includes(q) || 
+                        i.brand.toLowerCase().includes(q) || 
+                        (i.series && i.series.toLowerCase().includes(q)) || 
+                        (i.sku && i.sku.toLowerCase().includes(q))) &&
+                       (!brand || i.brand === brand) && (!scale || i.scale === scale) && (!cond || i.condition === cond);
+            });
+
+            document.getElementById('inventory-counter').textContent = `Exibindo ${filtered.length} de ${colecao.length} carrinhos`;
+            
+            if(viewMode === 'grid') {
+                document.getElementById('inventory-grid').classList.remove('hidden');
+                document.getElementById('inventory-table-container').classList.add('hidden');
+                renderGrid(filtered);
+            } else {
+                document.getElementById('inventory-grid').classList.add('hidden');
+                document.getElementById('inventory-table-container').classList.remove('hidden');
+                renderTable(filtered);
+            }
+        }
+
+        function renderGrid(items) {
+            const c = document.getElementById('inventory-grid'); c.innerHTML = '';
+            if (items.length === 0) { c.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500 italic text-sm">Nenhum item corresponde à filtragem.</div>'; return; }
+            items.forEach(i => {
+                const p = i.photos[0] || 'https://placehold.co/300x200/0F1524/10B981?text=Sem+Foto';
+                c.innerHTML += `<div onclick="showDetails('${i.id}')" class="bg-darkCard border border-darkBorder rounded-2xl p-3 flex flex-col justify-between hover:border-brandGreen cursor-pointer transition"><div class="relative"><img src="${p}" class="w-full aspect-video object-cover rounded-xl mb-2">${i.sku ? `<span class="absolute top-1 left-1 bg-slate-950/80 px-1.5 py-0.5 rounded text-[8px] font-mono">${i.sku}</span>` : ''}<span class="absolute bottom-1 right-1 bg-brandCyan/20 text-brandCyan text-[8px] px-1.5 rounded font-bold">${i.scale}</span></div><span class="text-[9px] text-brandGreen font-bold">${i.brand}</span><h4 class="font-bold text-sm truncate text-slate-100">${i.model}</h4><p class="text-xs text-slate-400 truncate">${i.series || 'Avulso'}</p><div class="flex justify-between items-center mt-2 pt-2 border-t border-darkBorder"><span class="text-xs text-slate-400">${i.condition}</span><span class="text-sm font-bold text-brandGreen">R$ ${i.price.toFixed(2)}</span></div></div>`;
+            });
+        }
+
+        function renderTable(items) {
+            const tbody = document.getElementById('inventory-table-body'); tbody.innerHTML = '';
+            if (items.length === 0) { tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-500 italic">Nenhum registro localizado.</td></tr>'; return; }
+            items.forEach(i => {
+                const p = i.photos[0] || 'https://placehold.co/60x40/0F1524/10B981?text=X';
+                tbody.innerHTML += `<tr class="hover:bg-slate-900/40 transition cursor-pointer" onclick="showDetails('${i.id}')">
+                    <td class="p-3"><img src="${p}" class="w-12 aspect-video object-cover rounded border border-darkBorder"></td>
+                    <td class="p-3 text-xs font-bold text-brandGreen uppercase">${i.brand}</td>
+                    <td class="p-3 font-semibold text-slate-200">${i.model}</td>
+                    <td class="p-3 text-slate-400 text-xs">${i.series || '-'}</td>
+                    <td class="p-3"><span class="bg-brandCyan/10 text-brandCyan px-2 py-0.5 rounded text-[10px] font-bold">${i.scale}</span></td>
+                    <td class="p-3 font-bold text-brandGreen">R$ ${i.price.toFixed(2)}</td>
+                    <td class="p-3 text-xs text-slate-400">${i.condition}</td>
+                    <td class="p-3"><button class="bg-darkBorder hover:bg-brandGreen hover:text-darkBg px-2 py-1 rounded text-xs transition">Ver</button></td>
+                </tr>`;
+            });
+        }
+
+        function showDetails(id) {
+            const item = colecao.find(i => i.id === id); if (!item) return;
+            document.getElementById('modal-brand-model').textContent = item.model;
+            document.getElementById('modal-sku').textContent = item.sku ? `SKU: ${item.sku}` : 'Sem SKU';
+            document.getElementById('modal-brand').textContent = item.brand;
+            document.getElementById('modal-series').textContent = item.series || '-';
+            document.getElementById('modal-series-number').textContent = item.seriesNumber || '-';
+            document.getElementById('modal-year').textContent = item.year || '-';
+            document.getElementById('modal-scale').textContent = item.scale;
+            document.getElementById('modal-price').textContent = `R$ ${item.price.toFixed(2)}`;
+            document.getElementById('modal-condition').textContent = item.condition;
+            document.getElementById('modal-date').textContent = item.date;
+            document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.';
+            
+            // Mapeia fotos válidas para a galeria do Lightbox
+            currentActivePhotos = item.photos.filter(p => p !== '');
+            
+            const grid = document.getElementById('modal-photos-grid'); grid.innerHTML = '';
+            if(currentActivePhotos.length === 0) {
+                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full">Nenhuma foto registrada para este veículo.</p>';
+            } else {
+                item.photos.forEach((p, index) => {
+                    if (p) {
+                        // Acha a posição real dentro das fotos ativas para abrir no ponto certo
+                        const activeIdx = currentActivePhotos.indexOf(p);
+                        grid.innerHTML += `<div onclick="openLightbox(${activeIdx})" class="aspect-square rounded-xl overflow-hidden border border-darkBorder cursor-zoom-in hover:border-brandGreen transition"><img src="${p}" class="w-full h-full object-cover"></div>`;
+                    }
+                });
+            }
+
+            document.getElementById('modal-btn-delete').onclick = (e) => { e.stopPropagation(); deleteItem(item.id); };
+            document.getElementById('modal-btn-edit').onclick = (e) => { e.stopPropagation(); editItem(item); };
+            document.getElementById('details-modal').className = "fixed inset-0 bg-darkBg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4";
+        }
+
+        // FUNÇÕES DA GALERIA LIGHTBOX (ZOOM + CONTROLE DE PASSO)
+        function openLightbox(index) {
+            if(currentActivePhotos.length === 0) return;
+            currentLightboxIndex = index;
+            document.getElementById('lightbox-img').src = currentActivePhotos[currentLightboxIndex];
+            document.getElementById('lightbox-modal').className = "fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4";
+        }
+        function closeLightbox() { document.getElementById('lightbox-modal').className = "hidden"; }
+        function navigateLightbox(direction) {
+            if(currentActivePhotos.length <= 1) return;
+            currentLightboxIndex += direction;
+            if(currentLightboxIndex >= currentActivePhotos.length) currentLightboxIndex = 0;
+            if(currentLightboxIndex < 0) currentLightboxIndex = currentActivePhotos.length - 1;
+            document.getElementById('lightbox-img').src = currentActivePhotos[currentLightboxIndex];
+        }
+
+        function deleteItem(id) {
+            if (confirm('Deletar permanentemente da garagem?')) {
+                const tx = db.transaction(['colecao'], 'readwrite'); tx.objectStore('colecao').delete(id);
+                tx.oncomplete = async () => { await loadCollection(); renderAll(); closeModal(); await pushToCloud(); };
+            }
+        }
+
+        function editItem(item) {
+            closeModal(); switchTab('cadastro');
+            document.getElementById('form-title').textContent = 'Editar Miniatura';
+            document.getElementById('edit-id').value = item.id;
+            document.getElementById('form-sku').value = item.sku || '';
+            document.getElementById('form-brand').value = item.brand;
+            document.getElementById('form-model').value = item.model;
+            document.getElementById('form-series').value = item.series || '';
+            document.getElementById('form-series-number').value = item.seriesNumber || '';
+            document.getElementById('form-year').value = item.year || '';
+            document.getElementById('form-scale').value = item.scale;
+            document.getElementById('form-condition').value = item.condition;
+            document.getElementById('form-price').value = item.price || '';
+            document.getElementById('form-date').value = item.date || '';
+            document.getElementById('form-set-status').value = item.setStatus;
+            document.getElementById('form-notes').value = item.notes || '';
+            item.photos.forEach((p, idx) => {
+                const index = idx + 1;
+                if (p) {
+                    imagesBase64[index] = p;
+                    document.getElementById('preview-img' + index).src = p;
+                    document.getElementById('preview-img' + index).classList.remove('hidden');
+                    document.getElementById('preview-placeholder' + index).classList.add('hidden');
+                    document.getElementById('btn-clear' + index).classList.remove('hidden');
+                } else { clearImage(index); }
+            });
+        }
+
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader(); reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width, h = img.height;
+                        if (w > h) { if (w > 400) { h *= 400/w; w = 400; } } else { if (h > 400) { w *= 400/h; h = 400; } }
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                };
+            });
+        }
+
+        async function previewImage(e, idx) {
+            const f = e.target.files[0];
+            if (f) {
+                const b64 = await compressImage(f); imagesBase64[idx] = b64;
+                document.getElementById('preview-img'+idx).src = b64;
+                document.getElementById('preview-img'+idx).classList.remove('hidden');
+                document.getElementById('preview-placeholder'+idx).classList.add('hidden');
+                document.getElementById('btn-clear'+idx).classList.remove('hidden');
+            }
+        }
+
+        function clearImage(idx) {
+            imagesBase64[idx] = ''; document.getElementById('file-photo'+idx).value = '';
+            document.getElementById('preview-img'+idx).classList.add('hidden');
+            document.getElementById('preview-placeholder'+idx).classList.remove('hidden');
+            document.getElementById('btn-clear'+idx).classList.add('hidden');
+        }
+
+        function checkDuplicateSku() {
+            const sku = document.getElementById('form-sku').value.trim();
+            const id = document.getElementById('edit-id').value;
+            if(!sku) { document.getElementById('sku-warning').classList.add('hidden'); return; }
+            const d = colecao.find(i => i.sku && i.sku.toLowerCase() === sku.toLowerCase() && i.id !== id);
+            document.getElementById('sku-warning').classList.toggle('hidden', !d);
+        }
+
+        function resetForm() { document.getElementById('car-form').reset(); document.getElementById('edit-id').value = ''; clearImage(1); clearImage(2); clearImage(3); document.getElementById('form-title').textContent = 'Registrar Nova Miniatura'; }
+        function closeModal() { document.getElementById('details-modal').className = "hidden"; }
+        
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2";
+            });
+            document.getElementById('btn-' + tabId).className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md";
+            if (tabId === 'dashboard') calculateMetrics();
+            else if (tabId === 'inventario') applyFilters();
+            else if (tabId === 'cadastro') resetForm();
+        }
+
+        function exportDatabaseJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(colecao, null, 2));
+            const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "garagem_virtual_backup.json"); dl.click();
+        }
+
+        function exportCollectionCSV() {
+            let csv = "data:text/csv;charset=utf-8,\uFEFFID,SKU,Fabricante,Modelo,Escala,Preco Pago\r\n";
+            colecao.forEach(i => { csv += `${i.id},"${i.sku||''}","${i.brand}","${i.model}",${i.scale},${i.price}\r\n`; });
+            const dl = document.createElement('a'); dl.setAttribute("href", encodeURI(csv)); dl.setAttribute("download", "colecao.csv"); dl.click();
+        }
+
+        function saveCloudKeys() {
+            CLIENT_ID = document.getElementById('cfg-client-id').value.trim();
+            API_KEY = document.getElementById('cfg-api-key').value.trim();
+            localStorage.setItem('cfg_client_id', CLIENT_ID); localStorage.setItem('cfg_api_key', API_KEY);
+            if (CLIENT_ID && API_KEY && navigator.onLine) injectGoogleScripts();
+        }
+
+        function injectGoogleScripts() {
+            if (document.getElementById('gapi-script')) return;
+            const gapiScript = document.createElement('script'); gapiScript.id = 'gapi-script'; gapiScript.src = "https://apis.google.com/js/api.js";
+            gapiScript.onload = () => gapi.load('client', async () => {
+                try {
+                    await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
+                    const savedToken = localStorage.getItem('gdrive_token');
+                    if (savedToken) { gapi.client.setToken(JSON.parse(savedToken)); isGoogleAuthenticated = true; updateCloudUI(true); }
+                } catch(e) {}
+            });
+            document.head.appendChild(gapiScript);
+            const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
+            gisScript.onload = () => { try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); } catch(e) {} };
+            document.head.appendChild(gisScript);
+        }
+
+        function handleAuthClick() {
+            if (!navigator.onLine || !tokenClient) { alert("Sincronização indisponível. Requer conexão e chaves salvas."); return; }
+            tokenClient.callback = async (resp) => {
+                if (resp.error !== undefined) { throw (resp); }
+                localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
+                isGoogleAuthenticated = true; updateCloudUI(true); await pushToCloud();
+            };
+            tokenClient.requestAccessToken({prompt: gapi.client.getToken() === null ? 'consent' : ''});
+        }
+
+        function updateCloudUI(authenticated) {
+            const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text'); const btn = document.getElementById('btn-google-auth');
+            const userLabel = document.getElementById('gdrive-user');
+            if (authenticated && isGoogleAuthenticated) {
+                indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brandGreen/10 border border-brandGreen/20 text-xs text-brandGreen font-medium";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Espelhamento Nuvem Ativo";
+                if(btn) btn.textContent = "Conectado"; if(userLabel) userLabel.textContent = "Status: Integrado ao Drive";
+            } else {
+                indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-blue-500"; text.textContent = "Modo Local Seguro";
+                if(btn) btn.textContent = "Conectar Google Drive"; if(userLabel) userLabel.textContent = "Status: Armazenamento Local Isolado";
+            }
+        }
+
+        async function getDriveFileId() {
+            if (!isGoogleAuthenticated) return null;
+            try { const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); return response.result.files.length > 0 ? response.result.files[0].id : null; } catch (err) { return null; }
+        }
+
+        async function pushToCloud() {
+            if (!isGoogleAuthenticated || !navigator.onLine) return;
+            try {
+                const fileId = await getDriveFileId(); const boundary = 'foo_bar_baz'; const delimiter = "\r\n--" + boundary + "\r\n"; const close_delimiter = "\r\n--" + boundary + "--";
+                const metadata = { 'name': 'garagem_virtual_backup.json', 'parents': ['appDataFolder'] }; const data = JSON.stringify(colecao);
+                let multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + data + close_delimiter;
+                await gapi.client.request({ 'path': '/upload/drive/v3/files' + (fileId ? '/' + fileId : ''), 'method': fileId ? 'PATCH' : 'POST', 'params': {'uploadType': 'multipart'}, 'headers': {'Content-Type': 'multipart/related; boundary="' + boundary + '"'}, 'body': multipartRequestBody });
+                document.getElementById('gdrive-sync-time').textContent = `Último backup: Hoje às ${new Date().toLocaleTimeString('pt-BR')}`;
+            } catch (e) {}
+        }
+
+        async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados espelhados na nuvem."); }
+        async function forceSyncDownload() {
+            if(!navigator.onLine) return; const fileId = await getDriveFileId(); if (!fileId) return;
+            try {
+                const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
+                if (Array.isArray(res.result) && confirm("Deseja substituir seus dados atuais pelos dados salvos no Drive?")) {
+                    const tx = db.transaction(['colecao'], 'readwrite'); await tx.objectStore('colecao').clear();
+                    for (const item of res.result) tx.objectStore('colecao').put(item);
+                    tx.oncomplete = async () => { await loadCollection(); renderAll(); alert("Dados sincronizados com sucesso!"); };
+                }
+            } catch (e) { alert("Falha na importação."); }
+        }
+
+        function renderAll() { calculateMetrics(); applyFilters(); }
+        window.addEventListener('DOMContentLoaded', loadAppData);
+        window.addEventListener('online', pushToCloud);
+    </script>
+</body>
+</html>
