@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garagem Virtual - Gestão de Acervo Diecast</title>
+    <link rel="icon" type="image/png" href="icone.png">
+    <link rel="apple-touch-icon" href="icone.png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,8 +44,20 @@
     <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brandGreen to-brandCyan flex items-center justify-center text-darkBg shadow-lg shadow-brandGreen/20">
-                    <i class="fa-solid fa-car-side text-xl"></i>
+                <div class="w-12 h-12 rounded-xl bg-slate-950 flex items-center justify-center border border-darkBorder shadow-lg shadow-brandGreen/5 p-1">
+                    <svg viewBox="0 0 200 200" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="logoGrad" x1="20%" y1="0%" x2="80%" y2="0%">
+                                <stop offset="0%" stop-color="#06B6D4" />
+                                <stop offset="100%" stop-color="#10B981" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 50 105 C 65 75, 90 70, 115 75 C 130 78, 145 88, 145 98 C 145 110, 135 115, 120 115 L 100 115" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" />
+                        <path d="M 80 95 L 50 105 L 85 115" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="75" cy="125" r="9" fill="#0F1524" stroke="url(#logoGrad)" stroke-width="4"/>
+                        <circle cx="125" cy="125" r="9" fill="#0F1524" stroke="url(#logoGrad)" stroke-width="4"/>
+                        <path d="M 45 142 L 155 142 L 150 148 L 50 148 Z" fill="url(#logoGrad)" opacity="0.9"/>
+                    </svg>
                 </div>
                 <div>
                     <h1 class="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Garagem Virtual</h1>
@@ -132,7 +147,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full md:w-auto">
                     <select id="filter-brand" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
                     <select id="filter-scale" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
-                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none flex-grow">
+                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
                         <option value="">Qualquer Estado</option>
                         <option value="Na cartela">Na cartela</option>
                         <option value="Loose">Solto (Loose)</option>
@@ -358,7 +373,7 @@
     </div>
 
     <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
             <input type="text" id="new-brand-input" placeholder="Ex: Tarmac Works" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandGreen">
             <div class="flex gap-2 justify-end">
@@ -369,9 +384,9 @@
     </div>
 
     <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
-            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:87" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
             <div class="flex gap-2 justify-end">
                 <button onclick="closeNewScaleModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
                 <button onclick="saveNewScale()" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold">Adicionar</button>
@@ -382,12 +397,10 @@
     <script>
         let CLIENT_ID = localStorage.getItem('cfg_client_id') || ''; 
         let API_KEY = localStorage.getItem('cfg_api_key') || '';
-        
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 
         let tokenClient = null; let isGoogleAuthenticated = false; let db = null;
-
         let marcas = ['Hot Wheels', 'Matchbox', 'Majorette', 'Greenlight', 'Mini GT', 'Maisto', 'Jada Toys', 'M2 Machines', 'Auto World'];
         let escalas = ['1:64', '1:43', '1:32', '1:18', 'Outra'];
         let colecao = [];
@@ -616,7 +629,7 @@
         function showDetails(id) {
             const item = colecao.find(i => i.id === id); if (!item) return;
             document.getElementById('modal-brand-model').textContent = item.model;
-            document.getElementById('modal-sku').textContent = item.sku ? `SKU: ${item.sku}` : 'Sem SKU';
+            document.getElementById('modal-sku').textContent = item.sku ? `Código / SKU: ${item.sku}` : 'Sem SKU';
             document.getElementById('modal-brand').textContent = item.brand;
             document.getElementById('modal-series').textContent = item.series || '-';
             document.getElementById('modal-series-number').textContent = item.seriesNumber || '-';
@@ -670,6 +683,7 @@
 
         function editItem(item) {
             closeModal(); switchTab('cadastro');
+            document.getElementById('form-title').textContent = 'Editar Miniatura';
             document.getElementById('edit-id').value = item.id;
             document.getElementById('form-sku').value = item.sku || '';
             document.getElementById('form-brand').value = item.brand;
@@ -782,7 +796,6 @@
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
-
             const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
             gisScript.onload = () => { try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); } catch(e) {} };
             document.head.appendChild(gisScript);
@@ -797,6 +810,14 @@
             };
             tokenClient.requestAccessToken({prompt: gapi.client.getToken() === null ? 'consent' : ''});
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+            if (document.getElementById('lightbox-modal').className.includes('flex')) {
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            }
+        });
 
         function updateCloudUI(authenticated) {
             const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
