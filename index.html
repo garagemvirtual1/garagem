@@ -44,20 +44,8 @@
     <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-xl bg-slate-950 flex items-center justify-center border border-darkBorder shadow-lg shadow-brandGreen/5 p-1">
-                    <svg viewBox="0 0 200 200" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <linearGradient id="logoGrad" x1="20%" y1="0%" x2="80%" y2="0%">
-                                <stop offset="0%" stop-color="#06B6D4" />
-                                <stop offset="100%" stop-color="#10B981" />
-                            </linearGradient>
-                        </defs>
-                        <path d="M 50 105 C 65 75, 90 70, 115 75 C 130 78, 145 88, 145 98 C 145 110, 135 115, 120 115 L 100 115" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" />
-                        <path d="M 80 95 L 50 105 L 85 115" stroke="url(#logoGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
-                        <circle cx="75" cy="125" r="9" fill="#0F1524" stroke="url(#logoGrad)" stroke-width="4"/>
-                        <circle cx="125" cy="125" r="9" fill="#0F1524" stroke="url(#logoGrad)" stroke-width="4"/>
-                        <path d="M 45 142 L 155 142 L 150 148 L 50 148 Z" fill="url(#logoGrad)" opacity="0.9"/>
-                    </svg>
+                <div class="w-12 h-12 rounded-xl bg-slate-950 overflow-hidden border border-darkBorder shadow-lg shadow-brandGreen/5">
+                    <img src="icone.png" alt="Garagem Virtual Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/0F1524/10B981?text=GV'">
                 </div>
                 <div>
                     <h1 class="font-display font-bold text-xl tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Garagem Virtual</h1>
@@ -386,7 +374,7 @@
     <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
-            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:87" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
             <div class="flex gap-2 justify-end">
                 <button onclick="closeNewScaleModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
                 <button onclick="saveNewScale()" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold">Adicionar</button>
@@ -744,6 +732,7 @@
             document.getElementById('btn-clear'+idx).classList.add('hidden');
         }
 
+        // Validador Anti-SKU Duplicado ativo
         function checkDuplicateSku() {
             const sku = document.getElementById('form-sku').value.trim();
             const id = document.getElementById('edit-id').value;
@@ -758,10 +747,12 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
+            
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2";
             });
             document.getElementById('btn-' + tabId).className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md";
+
             if (tabId === 'dashboard') calculateMetrics();
             else if (tabId === 'inventario') applyFilters();
             else if (tabId === 'cadastro') resetForm();
@@ -796,6 +787,7 @@
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
+
             const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
             gisScript.onload = () => { try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); } catch(e) {} };
             document.head.appendChild(gisScript);
