@@ -38,7 +38,6 @@
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg">
 
-    <!-- CABEÇALHO -->
     <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -73,10 +72,8 @@
         </div>
     </header>
 
-    <!-- ÁREA PRINCIPAL -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
         
-        <!-- DASHBOARD -->
         <section id="tab-dashboard" class="tab-content block space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
@@ -126,7 +123,6 @@
             </div>
         </section>
 
-        <!-- INVENTÁRIO -->
         <section id="tab-inventario" class="tab-content hidden space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div class="relative w-full md:flex-grow">
@@ -136,7 +132,7 @@
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full md:w-auto">
                     <select id="filter-brand" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
                     <select id="filter-scale" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
-                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
+                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none flex-grow">
                         <option value="">Qualquer Estado</option>
                         <option value="Na cartela">Na cartela</option>
                         <option value="Loose">Solto (Loose)</option>
@@ -173,7 +169,6 @@
             </div>
         </section>
 
-        <!-- FORMULÁRIO -->
         <section id="tab-cadastro" class="tab-content hidden max-w-3xl mx-auto">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-6">
                 <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
@@ -286,11 +281,10 @@
             </div>
         </section>
 
-        <!-- CONFIGURAÇÕES -->
         <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
-                <p class="text-xs text-slate-400">Insira suas chaves caso queira usar a nuvem automática futuramente. Sem elas o app opera localmente de forma isolada e segura.</p>
+                <p class="text-xs text-slate-400">Insira suas chaves caso queira usar a nuvem automática. Sem elas o app opera localmente de forma isolada e segura.</p>
                 
                 <div class="grid grid-cols-1 gap-3 bg-slate-950 p-4 rounded-xl border border-darkBorder">
                     <div>
@@ -329,7 +323,6 @@
         </section>
     </main>
 
-    <!-- MODAL DETALHES -->
     <div id="details-modal" class="fixed inset-0 bg-darkBg/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 border-b border-darkBorder bg-slate-950/40">
@@ -337,7 +330,6 @@
                 <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-darkBorder text-slate-400 hover:text-red-400 flex items-center justify-center"><i class="fa-solid fa-x"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-6 flex-grow">
-                <!-- Grade de miniaturas clicáveis que abrem o Lightbox -->
                 <div class="grid grid-cols-3 gap-3" id="modal-photos-grid"></div>
                 <div class="grid grid-cols-2 gap-4 text-sm">
                     <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fabricante</p><p id="modal-brand" class="font-semibold text-slate-200"></p></div>
@@ -358,7 +350,6 @@
         </div>
     </div>
 
-    <!-- MODAL DO LIGHTBOX (ZOOM E NAVEGAÇÃO DE FOTOS) -->
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-50 p-4 select-none">
         <button onclick="closeLightbox()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-xmark"></i></button>
         <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-left"></i></button>
@@ -366,7 +357,6 @@
         <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- MODAIS DE CADASTRO ADICIONAL -->
     <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
@@ -381,7 +371,7 @@
     <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
-            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:87" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
             <div class="flex gap-2 justify-end">
                 <button onclick="closeNewScaleModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
                 <button onclick="saveNewScale()" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold">Adicionar</button>
@@ -392,16 +382,17 @@
     <script>
         let CLIENT_ID = localStorage.getItem('cfg_client_id') || ''; 
         let API_KEY = localStorage.getItem('cfg_api_key') || '';
+        
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 
         let tokenClient = null; let isGoogleAuthenticated = false; let db = null;
+
         let marcas = ['Hot Wheels', 'Matchbox', 'Majorette', 'Greenlight', 'Mini GT', 'Maisto', 'Jada Toys', 'M2 Machines', 'Auto World'];
         let escalas = ['1:64', '1:43', '1:32', '1:18', 'Outra'];
         let colecao = [];
         let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
         
-        // Controle de fotos do Lightbox
         let currentActivePhotos = [];
         let currentLightboxIndex = 0;
 
@@ -574,7 +565,6 @@
             const scale = document.getElementById('filter-scale').value;
             const cond = document.getElementById('filter-condition').value;
 
-            // Filtro varre Modelo, Marca, SKU e agora o campo SÉRIE/COLEÇÃO perfeitamente
             const filtered = colecao.filter(i => {
                 return (i.model.toLowerCase().includes(q) || 
                         i.brand.toLowerCase().includes(q) || 
@@ -637,16 +627,14 @@
             document.getElementById('modal-date').textContent = item.date;
             document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.';
             
-            // Mapeia fotos válidas para a galeria do Lightbox
             currentActivePhotos = item.photos.filter(p => p !== '');
             
             const grid = document.getElementById('modal-photos-grid'); grid.innerHTML = '';
             if(currentActivePhotos.length === 0) {
-                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full">Nenhuma foto registrada para este veículo.</p>';
+                grid.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full">Nenhuma foto registrada.</p>';
             } else {
                 item.photos.forEach((p, index) => {
                     if (p) {
-                        // Acha a posição real dentro das fotos ativas para abrir no ponto certo
                         const activeIdx = currentActivePhotos.indexOf(p);
                         grid.innerHTML += `<div onclick="openLightbox(${activeIdx})" class="aspect-square rounded-xl overflow-hidden border border-darkBorder cursor-zoom-in hover:border-brandGreen transition"><img src="${p}" class="w-full h-full object-cover"></div>`;
                     }
@@ -658,7 +646,6 @@
             document.getElementById('details-modal').className = "fixed inset-0 bg-darkBg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4";
         }
 
-        // FUNÇÕES DA GALERIA LIGHTBOX (ZOOM + CONTROLE DE PASSO)
         function openLightbox(index) {
             if(currentActivePhotos.length === 0) return;
             currentLightboxIndex = index;
@@ -683,7 +670,6 @@
 
         function editItem(item) {
             closeModal(); switchTab('cadastro');
-            document.getElementById('form-title').textContent = 'Editar Miniatura';
             document.getElementById('edit-id').value = item.id;
             document.getElementById('form-sku').value = item.sku || '';
             document.getElementById('form-brand').value = item.brand;
@@ -796,6 +782,7 @@
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
+
             const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
             gisScript.onload = () => { try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); } catch(e) {} };
             document.head.appendChild(gisScript);
@@ -821,7 +808,7 @@
                 if(btn) btn.textContent = "Conectado"; if(userLabel) userLabel.textContent = "Status: Integrado ao Drive";
             } else {
                 indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium";
-                dot.className = "w-2.5 h-2.5 rounded-full bg-blue-500"; text.textContent = "Modo Local Seguro";
+                dot.className = "w-2.5 h-2.5 rounded-full bg-blue-500"; text.textContent = "Modo Local Ativo";
                 if(btn) btn.textContent = "Conectar Google Drive"; if(userLabel) userLabel.textContent = "Status: Armazenamento Local Isolado";
             }
         }
