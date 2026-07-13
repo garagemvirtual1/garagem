@@ -37,10 +37,13 @@
         ::-webkit-scrollbar-track { background: #090D1A; }
         ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+        @keyframes pulse-yellow { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .pulse-warn { animation: pulse-yellow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     </style>
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg">
 
+    <!-- CABEÇALHO -->
     <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -76,7 +79,7 @@
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
-        
+        <!-- DASHBOARD -->
         <section id="tab-dashboard" class="tab-content block space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
@@ -126,6 +129,7 @@
             </div>
         </section>
 
+        <!-- INVENTÁRIO -->
         <section id="tab-inventario" class="tab-content hidden space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div class="relative w-full md:flex-grow">
@@ -172,10 +176,11 @@
             </div>
         </section>
 
+        <!-- FORMULÁRIO COM AUTO-SAVE PREPARADO -->
         <section id="tab-cadastro" class="tab-content hidden max-w-3xl mx-auto">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-6">
                 <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
-                <form id="car-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <form id="car-form" onsubmit="handleFormSubmit(event)" oninput="triggerAutoSave()" class="space-y-4">
                     <input type="hidden" id="edit-id">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -199,14 +204,14 @@
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados, Boulevard)</label>
-                            <input type="text" id="form-series" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                            <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série</label>
-                            <input type="text" id="form-series-number" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série (Ex: 1/5 ou 01/05)</label>
+                            <input type="text" id="form-series-number" placeholder="Ex: 1/5" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Ano</label>
@@ -218,14 +223,6 @@
                                 <button type="button" onclick="showNewScaleModal()" class="text-xs text-brandCyan font-bold hover:underline bg-transparent border-none p-0 cursor-pointer">+ Outra</button>
                             </div>
                             <select id="form-scale" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen"></select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Estado</label>
-                            <select id="form-condition" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen">
-                                <option value="Na cartela">Na cartela</option>
-                                <option value="Loose">Loose (Solto)</option>
-                                <option value="Na caixa">Na caixa</option>
-                            </select>
                         </div>
                     </div>
 
@@ -239,10 +236,11 @@
                             <input type="date" id="form-date" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Status do Set</label>
-                            <select id="form-set-status" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none">
-                                <option value="Completo">Completo</option>
-                                <option value="Em progresso">Em progresso</option>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Estado</label>
+                            <select id="form-condition" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen">
+                                <option value="Na cartela">Na cartela</option>
+                                <option value="Loose">Loose (Solto)</option>
+                                <option value="Na caixa">Na caixa</option>
                             </select>
                         </div>
                     </div>
@@ -253,8 +251,9 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (Até 3 Fotos)</label>
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (Clique para abrir a Câmera ou Galeria)</label>
                         <div class="grid grid-cols-3 gap-4">
+                            <!-- BOTÕES DE FOTO FLEXÍVEIS (CÂMERA DIRETA MAS PERMITE ARQUIVOS) -->
                             <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
                                 <input type="file" id="file-photo1" onchange="previewImage(event, 1)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                                 <img id="preview-img1" class="absolute inset-0 w-full h-full object-cover hidden">
@@ -277,17 +276,18 @@
                     </div>
 
                     <div class="flex gap-3 justify-end pt-4 border-t border-darkBorder">
-                        <button type="button" onclick="switchTab('inventario')" class="px-6 py-2.5 rounded-xl border border-darkBorder text-sm font-semibold text-slate-300">Cancelar</button>
+                        <button type="button" onclick="cancelRegistration()" class="px-6 py-2.5 rounded-xl border border-darkBorder text-sm font-semibold text-slate-300">Cancelar</button>
                         <button type="submit" class="px-8 py-2.5 rounded-xl bg-gradient-to-tr from-brandGreen to-brandCyan text-darkBg text-sm font-bold shadow-md shadow-brandGreen/20">Salvar Miniatura</button>
                     </div>
                 </form>
             </div>
         </section>
 
+        <!-- CONFIGURAÇÕES / NUVEM -->
         <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
-                <p class="text-xs text-slate-400">Insira suas chaves caso queira usar a nuvem automática. Sem elas o app opera localmente de forma isolada e segura.</p>
+                <p class="text-xs text-slate-400">Insira suas chaves caso queira usar a nuvem automática. O app memoriza o login e sincroniza dados entre dispositivos.</p>
                 
                 <div class="grid grid-cols-1 gap-3 bg-slate-950 p-4 rounded-xl border border-darkBorder">
                     <div>
@@ -311,8 +311,8 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <button onclick="forceSyncUpload()" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio</button>
-                    <button onclick="forceSyncDownload()" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados</button>
+                    <button onclick="forceSyncUpload()" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio para Nuvem</button>
+                    <button onclick="forceSyncDownload()" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem</button>
                 </div>
             </div>
 
@@ -326,6 +326,7 @@
         </section>
     </main>
 
+    <!-- MODAL DETALHES -->
     <div id="details-modal" class="fixed inset-0 bg-darkBg/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 border-b border-darkBorder bg-slate-950/40">
@@ -353,6 +354,7 @@
         </div>
     </div>
 
+    <!-- MODAL DO LIGHTBOX -->
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-50 p-4 select-none">
         <button onclick="closeLightbox()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-xmark"></i></button>
         <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-left"></i></button>
@@ -360,6 +362,7 @@
         <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
+    <!-- MODAL DE NOVA MARCA -->
     <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
@@ -371,10 +374,11 @@
         </div>
     </div>
 
+    <!-- MODAL DE NOVA ESCALA -->
     <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
-            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:87" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            <input type="text" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
             <div class="flex gap-2 justify-end">
                 <button onclick="closeNewScaleModal()" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs">Cancelar</button>
                 <button onclick="saveNewScale()" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold">Adicionar</button>
@@ -393,9 +397,8 @@
         let escalas = ['1:64', '1:43', '1:32', '1:18', 'Outra'];
         let colecao = [];
         let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
-        
-        let currentActivePhotos = [];
-        let currentLightboxIndex = 0;
+        let currentActivePhotos = []; let currentLightboxIndex = 0;
+        let isSyncing = false;
 
         function initDB() {
             return new Promise((resolve, reject) => {
@@ -422,8 +425,113 @@
                 
                 document.getElementById('cfg-client-id').value = CLIENT_ID;
                 document.getElementById('cfg-api-key').value = API_KEY;
+                
+                // Configurar câmera rápida detectando aparelho sem travar galeria
+                if(/Android|iPhone|iPad/i.test(navigator.userAgent)){
+                    document.getElementById('file-photo1').setAttribute('capture', 'environment');
+                    document.getElementById('file-photo2').setAttribute('capture', 'environment');
+                    document.getElementById('file-photo3').setAttribute('capture', 'environment');
+                }
+
+                // Checar se há rascunho de auto-save para restaurar (Prevenção de perda RAM da Câmera)
+                checkRestoreDraft();
+
                 if (navigator.onLine && CLIENT_ID && API_KEY) injectGoogleScripts();
             } catch (e) { console.error(e); }
+        }
+
+        // AUTO-SAVE EM TEMPO REAL
+        function triggerAutoSave() {
+            if (document.getElementById('edit-id').value) return; // Não salva rascunho se for edição
+            const draft = {
+                sku: document.getElementById('form-sku').value,
+                brand: document.getElementById('form-brand').value,
+                model: document.getElementById('form-model').value,
+                series: document.getElementById('form-series').value,
+                seriesNumber: document.getElementById('form-series-number').value,
+                year: document.getElementById('form-year').value,
+                scale: document.getElementById('form-scale').value,
+                price: document.getElementById('form-price').value,
+                date: document.getElementById('form-date').value,
+                condition: document.getElementById('form-condition').value,
+                notes: document.getElementById('form-notes').value,
+                photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
+            };
+            localStorage.setItem('gv_cadastro_draft', JSON.stringify(draft));
+        }
+
+        function checkRestoreDraft() {
+            const raw = localStorage.getItem('gv_cadastro_draft');
+            if (raw) {
+                const draft = JSON.parse(raw);
+                // Se o rascunho estiver vazio, ignora
+                if (!draft.model && !draft.brand && !draft.series && !draft.photos[0]) return;
+                
+                document.getElementById('form-sku').value = draft.sku || '';
+                document.getElementById('form-brand').value = draft.brand || '';
+                document.getElementById('form-model').value = draft.model || '';
+                document.getElementById('form-series').value = draft.series || '';
+                document.getElementById('form-series-number').value = draft.seriesNumber || '';
+                document.getElementById('form-year').value = draft.year || '';
+                document.getElementById('form-scale').value = draft.scale || '';
+                document.getElementById('form-price').value = draft.price || '';
+                document.getElementById('form-date').value = draft.date || '';
+                document.getElementById('form-condition').value = draft.condition || 'Na cartela';
+                document.getElementById('form-notes').value = draft.notes || '';
+                
+                draft.photos.forEach((p, idx) => {
+                    const i = idx + 1;
+                    if(p) {
+                        imagesBase64[i] = p;
+                        document.getElementById('preview-img'+i).src = p;
+                        document.getElementById('preview-img'+i).classList.remove('hidden');
+                        document.getElementById('preview-placeholder'+i).classList.add('hidden');
+                        document.getElementById('btn-clear'+i).classList.remove('hidden');
+                    }
+                });
+                // Força abrir na aba de cadastro para o usuário continuar de onde parou
+                switchTab('cadastro');
+            }
+        }
+
+        function clearDraft() { localStorage.removeItem('gv_cadastro_draft'); }
+
+        // INTELIGÊNCIA DE SÉRIES: AUTO-PREENCHIMENTO
+        function checkAutocompleteSeries() {
+            const seriesName = document.getElementById('form-series').value.trim().toLowerCase();
+            if(!seriesName) return;
+            const match = colecao.find(i => i.series && i.series.toLowerCase() === seriesName);
+            if(match) {
+                if(!document.getElementById('form-brand').value) document.getElementById('form-brand').value = match.brand;
+                if(!document.getElementById('form-scale').value) document.getElementById('form-scale').value = match.scale;
+                triggerAutoSave();
+            }
+        }
+
+        // INTELIGÊNCIA DE SÉRIES: CALCULO DE SET COMPLETO AUTOMÁTICO
+        function getSeriesStatus(seriesName) {
+            if(!seriesName) return 'Completo';
+            const itemsInSeries = colecao.filter(i => i.series && i.series.toLowerCase() === seriesName.toLowerCase());
+            if(itemsInSeries.length === 0) return 'Em progresso';
+            
+            // Procura por formato X/Y (ex: 1/5)
+            let totalExpected = 0;
+            let registeredNumbers = new Set();
+
+            itemsInSeries.forEach(i => {
+                if(i.seriesNumber && i.seriesNumber.includes('/')) {
+                    const parts = i.seriesNumber.split('/');
+                    const current = parseInt(parts[0].trim());
+                    const total = parseInt(parts[1].trim());
+                    if(!isNaN(total)) totalExpected = total;
+                    if(!isNaN(current)) registeredNumbers.add(current);
+                }
+            });
+
+            if(totalExpected > 0 && registeredNumbers.size >= totalExpected) {
+                return 'Completo';
+            }
+            return 'Em progresso';
         }
 
         function loadCustomLists() {
@@ -486,7 +594,7 @@
         function saveNewBrand() {
             const v = document.getElementById('new-brand-input').value.trim(); if (!v) return;
             const tx = db.transaction(['marcas_custom'], 'readwrite'); tx.objectStore('marcas_custom').put({nome: v});
-            tx.oncomplete = async () => { await loadCustomLists(); populateBrandSelects(); document.getElementById('form-brand').value = v; closeNewBrandModal(); };
+            tx.oncomplete = async () => { await loadCustomLists(); populateBrandSelects(); document.getElementById('form-brand').value = v; closeNewBrandModal(); triggerAutoSave(); };
         }
 
         function showNewScaleModal() { document.getElementById('new-scale-modal').classList.remove('hidden'); document.getElementById('new-scale-modal').classList.add('flex'); }
@@ -494,32 +602,62 @@
         function saveNewScale() {
             const v = document.getElementById('new-scale-input').value.trim(); if (!v) return;
             const tx = db.transaction(['escalas_custom'], 'readwrite'); tx.objectStore('escalas_custom').put({nome: v});
-            tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); applyFilters(); };
+            tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); triggerAutoSave(); applyFilters(); };
         }
 
         async function handleFormSubmit(e) {
             e.preventDefault();
             const eid = document.getElementById('edit-id').value;
+            const seriesInput = document.getElementById('form-series').value.trim();
+            
             const item = {
                 id: eid || 'car-' + Date.now(),
                 sku: document.getElementById('form-sku').value.trim(),
                 brand: document.getElementById('form-brand').value,
                 model: document.getElementById('form-model').value.trim(),
-                series: document.getElementById('form-series').value.trim(),
+                series: seriesInput,
                 seriesNumber: document.getElementById('form-series-number').value.trim(),
                 year: document.getElementById('form-year').value,
                 scale: document.getElementById('form-scale').value,
                 condition: document.getElementById('form-condition').value,
                 price: parseFloat(document.getElementById('form-price').value) || 0,
                 date: document.getElementById('form-date').value || new Date().toISOString().split('T')[0],
-                setStatus: document.getElementById('form-set-status').value,
-                notes: document.getElementById('form-notes').value.trim(),
-                photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
+                photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]],
+                lastUpdated: Date.now()
             };
 
             const tx = db.transaction(['colecao'], 'readwrite');
             tx.objectStore('colecao').put(item);
-            tx.oncomplete = async () => { await loadCollection(); resetForm(); switchTab('inventario'); await pushToCloud(); };
+            tx.oncomplete = async () => { 
+                clearDraft(); 
+                await loadCollection(); 
+                
+                // Recalcular status das séries de forma dinâmica e salvar retroativo
+                await reevaluateAllSeriesStatus();
+                
+                resetForm(); 
+                switchTab('inventario'); 
+                await pushToCloud(); 
+            };
+        }
+
+        async function reevaluateAllSeriesStatus() {
+            // Varre a coleção calculando o status real de cada veículo baseado no set
+            const tx = db.transaction(['colecao'], 'readwrite');
+            const store = tx.objectStore('colecao');
+            colecao.forEach(item => {
+                item.setStatus = getSeriesStatus(item.series);
+                store.put(item);
+            });
+            tx.oncomplete = async () => { await loadCollection(); calculateMetrics(); };
+        }
+
+        function cancelRegistration() {
+            if(confirm("Deseja limpar o cadastro atual?")) {
+                clearDraft();
+                resetForm();
+                switchTab('inventario');
+            }
         }
 
         function calculateMetrics() {
@@ -527,6 +665,7 @@
             const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
             document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             document.getElementById('stat-total-brands').textContent = new Set(colecao.map(i => i.brand)).size;
+            
             const comps = colecao.filter(i => i.setStatus === 'Completo').length;
             document.getElementById('stat-set-progress').textContent = colecao.length > 0 ? Math.round((comps / colecao.length) * 100) + '%' : '0%';
             renderDashboardChartsAndRecents();
@@ -552,7 +691,7 @@
             });
 
             const rContainer = document.getElementById('recent-items-container'); rContainer.innerHTML = '';
-            const recents = [...colecao].reverse().slice(0, 5);
+            const recents = [...colecao].sort((a,b) => b.lastUpdated - a.lastUpdated).slice(0, 5);
             if(recents.length === 0) rContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full text-center">Nenhum veículo adicionado recentemente.</p>';
             recents.forEach(item => {
                 const p = item.photos[0] || 'https://placehold.co/150x150/0F1524/10B981?text=Sem+Foto';
@@ -592,7 +731,7 @@
             if (items.length === 0) { c.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500 italic text-sm">Nenhum item corresponde à filtragem.</div>'; return; }
             items.forEach(i => {
                 const p = i.photos[0] || 'https://placehold.co/300x200/0F1524/10B981?text=Sem+Foto';
-                c.innerHTML += `<div onclick="showDetails('${i.id}')" class="bg-darkCard border border-darkBorder rounded-2xl p-3 flex flex-col justify-between hover:border-brandGreen cursor-pointer transition"><div class="relative"><img src="${p}" class="w-full aspect-video object-cover rounded-xl mb-2">${i.sku ? `<span class="absolute top-1 left-1 bg-slate-950/80 px-1.5 py-0.5 rounded text-[8px] font-mono">${i.sku}</span>` : ''}<span class="absolute bottom-1 right-1 bg-brandCyan/20 text-brandCyan text-[8px] px-1.5 rounded font-bold">${i.scale}</span></div><span class="text-[9px] text-brandGreen font-bold">${i.brand}</span><h4 class="font-bold text-sm truncate text-slate-100">${i.model}</h4><p class="text-xs text-slate-400 truncate">${i.series || 'Avulso'}</p><div class="flex justify-between items-center mt-2 pt-2 border-t border-darkBorder"><span class="text-xs text-slate-400">${i.condition}</span><span class="text-sm font-bold text-brandGreen">R$ ${i.price.toFixed(2)}</span></div></div>`;
+                c.innerHTML += `<div onclick="showDetails('${i.id}')" class="bg-darkCard border border-darkBorder rounded-2xl p-3 flex flex-col justify-between hover:border-brandGreen cursor-pointer transition"><div class="relative"><img src="${p}" class="w-full aspect-video object-cover rounded-xl mb-2">${i.sku ? `<span class="absolute top-1 left-1 bg-slate-950/80 px-1.5 py-0.5 rounded text-[8px] font-mono">${i.sku}</span>` : ''}<span class="absolute bottom-1 right-1 bg-brandCyan/20 text-brandCyan text-[8px] px-1.5 rounded font-bold">${i.scale}</span></div><span class="text-[9px] text-brandGreen font-bold">${i.brand}</span><h4 class="font-bold text-sm truncate text-slate-100">${i.model}</h4><p class="text-xs text-slate-400 truncate">${i.series || 'Avulso'} ${i.seriesNumber ? `(${i.seriesNumber})` : ''}</p><div class="flex justify-between items-center mt-2 pt-2 border-t border-darkBorder"><span class="text-xs text-slate-400">${i.condition}</span><span class="text-sm font-bold text-brandGreen">R$ ${i.price.toFixed(2)}</span></div></div>`;
             });
         }
 
@@ -605,7 +744,7 @@
                     <td class="p-3"><img src="${p}" class="w-12 aspect-video object-cover rounded border border-darkBorder"></td>
                     <td class="p-3 text-xs font-bold text-brandGreen uppercase">${i.brand}</td>
                     <td class="p-3 font-semibold text-slate-200">${i.model}</td>
-                    <td class="p-3 text-slate-400 text-xs">${i.series || '-'}</td>
+                    <td class="p-3 text-slate-400 text-xs">${i.series || '-'} ${i.seriesNumber ? `(${i.seriesNumber})` : ''}</td>
                     <td class="p-3"><span class="bg-brandCyan/10 text-brandCyan px-2 py-0.5 rounded text-[10px] font-bold">${i.scale}</span></td>
                     <td class="p-3 font-bold text-brandGreen">R$ ${i.price.toFixed(2)}</td>
                     <td class="p-3 text-xs text-slate-400">${i.condition}</td>
@@ -629,7 +768,6 @@
             document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.';
             
             currentActivePhotos = item.photos.filter(p => p !== '');
-            
             const grid = document.getElementById('modal-photos-grid'); grid.innerHTML = '';
             if(currentActivePhotos.length === 0) {
                 grid.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full">Nenhuma foto registrada.</p>';
@@ -683,7 +821,6 @@
             document.getElementById('form-condition').value = item.condition;
             document.getElementById('form-price').value = item.price || '';
             document.getElementById('form-date').value = item.date || '';
-            document.getElementById('form-set-status').value = item.setStatus;
             document.getElementById('form-notes').value = item.notes || '';
             item.photos.forEach((p, idx) => {
                 const index = idx + 1;
@@ -722,6 +859,7 @@
                 document.getElementById('preview-img'+idx).classList.remove('hidden');
                 document.getElementById('preview-placeholder'+idx).classList.add('hidden');
                 document.getElementById('btn-clear'+idx).classList.remove('hidden');
+                triggerAutoSave(); // Garante o salvamento imediato da imagem no rascunho
             }
         }
 
@@ -730,9 +868,9 @@
             document.getElementById('preview-img'+idx).classList.add('hidden');
             document.getElementById('preview-placeholder'+idx).classList.remove('hidden');
             document.getElementById('btn-clear'+idx).classList.add('hidden');
+            triggerAutoSave();
         }
 
-        // Validador Anti-SKU Duplicado ativo
         function checkDuplicateSku() {
             const sku = document.getElementById('form-sku').value.trim();
             const id = document.getElementById('edit-id').value;
@@ -783,7 +921,12 @@
                 try {
                     await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
                     const savedToken = localStorage.getItem('gdrive_token');
-                    if (savedToken) { gapi.client.setToken(JSON.parse(savedToken)); isGoogleAuthenticated = true; updateCloudUI(true); }
+                    if (savedToken) { 
+                        gapi.client.setToken(JSON.parse(savedToken)); 
+                        isGoogleAuthenticated = true; 
+                        updateCloudUI(true);
+                        await pullAndSyncCloud(); // AUTO-LOGIN + ESPELHAMENTO REAL CELULAR/PC AO ABRIR
+                    }
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
@@ -798,7 +941,7 @@
             tokenClient.callback = async (resp) => {
                 if (resp.error !== undefined) { throw (resp); }
                 localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
-                isGoogleAuthenticated = true; updateCloudUI(true); await pushToCloud();
+                isGoogleAuthenticated = true; updateCloudUI(true); await pullAndSyncCloud();
             };
             tokenClient.requestAccessToken({prompt: gapi.client.getToken() === null ? 'consent' : ''});
         }
@@ -815,6 +958,10 @@
             const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
             const text = document.getElementById('status-text'); const btn = document.getElementById('btn-google-auth');
             const userLabel = document.getElementById('gdrive-user');
+            
+            // Verifica se existem dados locais não sincronizados com a nuvem (Aviso de Pendência)
+            const localCount = colecao.length;
+            
             if (authenticated && isGoogleAuthenticated) {
                 indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brandGreen/10 border border-brandGreen/20 text-xs text-brandGreen font-medium";
                 dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Espelhamento Nuvem Ativo";
@@ -831,6 +978,52 @@
             try { const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); return response.result.files.length > 0 ? response.result.files[0].id : null; } catch (err) { return null; }
         }
 
+        // ESPELHAMENTO EM NUVEM REAL (CRUZAMENTO DE DISPOSITIVOS CELULAR/PC)
+        async function pullAndSyncCloud() {
+            if (!isGoogleAuthenticated || !navigator.onLine || isSyncing) return;
+            isSyncing = true;
+            try {
+                const fileId = await getDriveFileId();
+                if (!fileId) { isSyncing = false; await pushToCloud(); return; } // Se não há arquivo, cria o primeiro
+                
+                const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
+                const cloudCollection = res.result || [];
+                
+                if (Array.isArray(cloudCollection)) {
+                    // Mescla inteligente baseada em ID e carimbo de data/hora (lastUpdated)
+                    let mapColecao = new Map(colecao.map(item => [item.id, item]));
+                    let mudou = false;
+
+                    cloudCollection.forEach(cItem => {
+                        if (!mapColecao.has(cItem.id)) {
+                            mapColecao.set(cItem.id, cItem);
+                            mudou = true;
+                        } else {
+                            const lItem = mapColecao.get(cItem.id);
+                            if ((cItem.lastUpdated || 0) > (lItem.lastUpdated || 0)) {
+                                mapColecao.set(cItem.id, cItem);
+                                mudou = true;
+                            }
+                        }
+                    });
+
+                    if(mudou) {
+                        const novaColecao = Array.from(mapColecao.values());
+                        const tx = db.transaction(['colecao'], 'readwrite');
+                        await tx.objectStore('colecao').clear();
+                        for (const item of novaColecao) tx.objectStore('colecao').put(item);
+                        tx.oncomplete = async () => {
+                            await loadCollection();
+                            await reevaluateAllSeriesStatus();
+                            renderAll();
+                        };
+                    }
+                }
+            } catch (e) { console.error("Erro na sincronização automática:", e); }
+            isSyncing = false;
+            await pushToCloud(); // Garante que o que estava local e era mais novo suba de volta
+        }
+
         async function pushToCloud() {
             if (!isGoogleAuthenticated || !navigator.onLine) return;
             try {
@@ -839,25 +1032,16 @@
                 let multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + data + close_delimiter;
                 await gapi.client.request({ 'path': '/upload/drive/v3/files' + (fileId ? '/' + fileId : ''), 'method': fileId ? 'PATCH' : 'POST', 'params': {'uploadType': 'multipart'}, 'headers': {'Content-Type': 'multipart/related; boundary="' + boundary + '"'}, 'body': multipartRequestBody });
                 document.getElementById('gdrive-sync-time').textContent = `Último backup: Hoje às ${new Date().toLocaleTimeString('pt-BR')}`;
+                updateCloudUI(true);
             } catch (e) {}
         }
 
-        async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados espelhados na nuvem."); }
-        async function forceSyncDownload() {
-            if(!navigator.onLine) return; const fileId = await getDriveFileId(); if (!fileId) return;
-            try {
-                const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
-                if (Array.isArray(res.result) && confirm("Deseja substituir seus dados atuais pelos dados salvos no Drive?")) {
-                    const tx = db.transaction(['colecao'], 'readwrite'); await tx.objectStore('colecao').clear();
-                    for (const item of res.result) tx.objectStore('colecao').put(item);
-                    tx.oncomplete = async () => { await loadCollection(); renderAll(); alert("Dados sincronizados com sucesso!"); };
-                }
-            } catch (e) { alert("Falha na importação."); }
-        }
+        async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados locais espelhados e salvos no Drive."); }
+        async function forceSyncDownload() { if(!navigator.onLine) return; await pullAndSyncCloud(); alert("Sincronização forçada concluída com sucesso!"); }
 
         function renderAll() { calculateMetrics(); applyFilters(); }
         window.addEventListener('DOMContentLoaded', loadAppData);
-        window.addEventListener('online', pushToCloud);
+        window.addEventListener('online', pullAndSyncCloud);
     </script>
 </body>
 </html>
