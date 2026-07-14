@@ -41,7 +41,6 @@
 </head>
 <body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg">
 
-    <!-- CABEÇALHO -->
     <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -77,7 +76,6 @@
     </header>
 
     <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
-        <!-- DASHBOARD -->
         <section id="tab-dashboard" class="tab-content hidden space-y-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
@@ -127,7 +125,6 @@
             </div>
         </section>
 
-        <!-- INVENTÁRIO -->
         <section id="tab-inventario" class="tab-content hidden space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div class="relative w-full md:flex-grow">
@@ -174,11 +171,10 @@
             </div>
         </section>
 
-        <!-- FORMULÁRIO -->
         <section id="tab-cadastro" class="tab-content hidden max-w-3xl mx-auto">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-6">
                 <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
-                <form id="car-form" onsubmit="handleFormSubmit(event)" oninput="triggerAutoSave()" class="space-y-4">
+                <form id="car-form" onsubmit="handleFormSubmit(event)" oninput="triggerAutoSave()" onchange="triggerAutoSave()" class="space-y-4">
                     <input type="hidden" id="edit-id">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
@@ -251,7 +247,6 @@
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (Clique para abrir Câmera ou Pasta de Arquivos)</label>
                         <div class="grid grid-cols-3 gap-4">
-                            <!-- REMOVIDO ATTRIBUTE CAPTURE PARA VOLTAR MENU DE ESCOLA DA GALERIA/CÂMERA -->
                             <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
                                 <input type="file" id="file-photo1" onchange="previewImage(event, 1)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
                                 <img id="preview-img1" class="absolute inset-0 w-full h-full object-cover hidden">
@@ -281,7 +276,6 @@
             </div>
         </section>
 
-        <!-- CONFIGURAÇÕES / NUVEM -->
         <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
@@ -322,7 +316,6 @@
         </section>
     </main>
 
-    <!-- MODAL DETALHES -->
     <div id="details-modal" class="fixed inset-0 bg-darkBg/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
             <div class="flex justify-between items-center p-4 border-b border-darkBorder bg-slate-950/40">
@@ -350,7 +343,6 @@
         </div>
     </div>
 
-    <!-- MODAL DO LIGHTBOX -->
     <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-50 p-4 select-none">
         <button onclick="closeLightbox()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-xmark"></i></button>
         <button onclick="navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-left"></i></button>
@@ -358,7 +350,6 @@
         <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- MODAL DE NOVA MARCA -->
     <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
@@ -370,7 +361,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE NOVA ESCALA -->
     <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Escala</h3>
@@ -394,7 +384,7 @@
         let colecao = [];
         let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
         let currentActivePhotos = []; let currentLightboxIndex = 0;
-        let isSyncing = false;
+        let isSyncing = false; let gapiReady = false; let gisReady = false;
 
         function initDB() {
             return new Promise((resolve, reject) => {
@@ -418,11 +408,10 @@
                 populateBrandSelects();
                 populateScaleSelects();
                 
-                // CORREÇÃO CRÍTICA DO AUTO-SAVE: Testa e desvia ANTES de renderizar abas padrão
+                // RESTAURAÇÃO CRÍTICA: Desvia imediatamente se houver rascunho de RAM ativo
                 const rascunhoDetectado = checkRestoreDraft();
-                
                 if (!rascunhoDetectado) {
-                    switchTab('dashboard'); // Se não tiver rascunho, vai para o painel por padrão
+                    switchTab('dashboard'); 
                 }
 
                 document.getElementById('cfg-client-id').value = CLIENT_ID;
@@ -432,7 +421,7 @@
             } catch (e) { console.error(e); }
         }
 
-        // SALVAMENTO EM TEMPO REAL
+        // SALVAMENTO AUTOMÁTICO EM BACKGROUND
         function triggerAutoSave() {
             if (document.getElementById('edit-id').value) return; 
             const draft = {
@@ -480,8 +469,6 @@
                         document.getElementById('btn-clear'+i).classList.remove('hidden');
                     }
                 });
-                
-                // CORREÇÃO VISUAL: Força travar na aba cadastro e aborta fluxo comum
                 switchTab('cadastro');
                 return true;
             }
@@ -506,9 +493,7 @@
             const itemsInSeries = colecao.filter(i => i.series && i.series.toLowerCase() === seriesName.toLowerCase());
             if(itemsInSeries.length === 0) return 'Em progresso';
             
-            let totalExpected = 0;
-            let registeredNumbers = new Set();
-
+            let totalExpected = 0; let registeredNumbers = new Set();
             itemsInSeries.forEach(i => {
                 if(i.seriesNumber && i.seriesNumber.includes('/')) {
                     const parts = i.seriesNumber.split('/');
@@ -518,7 +503,6 @@
                     if(!isNaN(current)) registeredNumbers.add(current);
                 }
             });
-
             if(totalExpected > 0 && registeredNumbers.size >= totalExpected) return 'Completo';
             return 'Em progresso';
         }
@@ -577,33 +561,15 @@
             applyFilters();
         }
 
-        function showNewBrandModal() { document.getElementById('new-brand-modal').classList.remove('hidden'); document.getElementById('new-brand-modal').classList.add('flex'); }
-        function closeNewBrandModal() { document.getElementById('new-brand-modal').classList.add('hidden'); document.getElementById('new-brand-input').value = ''; }
-        function saveNewBrand() {
-            const v = document.getElementById('new-brand-input').value.trim(); if (!v) return;
-            const tx = db.transaction(['marcas_custom'], 'readwrite'); tx.objectStore('marcas_custom').put({nome: v});
-            tx.oncomplete = async () => { await loadCustomLists(); populateBrandSelects(); document.getElementById('form-brand').value = v; closeNewBrandModal(); triggerAutoSave(); };
-        }
-
-        function showNewScaleModal() { document.getElementById('new-scale-modal').classList.remove('hidden'); document.getElementById('new-scale-modal').classList.add('flex'); }
-        function closeNewScaleModal() { document.getElementById('new-scale-modal').classList.add('hidden'); document.getElementById('new-scale-input').value = ''; }
-        function saveNewScale() {
-            const v = document.getElementById('new-scale-input').value.trim(); if (!v) return;
-            const tx = db.transaction(['escalas_custom'], 'readwrite'); tx.objectStore('escalas_custom').put({nome: v});
-            tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); triggerAutoSave(); applyFilters(); };
-        }
-
         async function handleFormSubmit(e) {
             e.preventDefault();
             const eid = document.getElementById('edit-id').value;
-            const seriesInput = document.getElementById('form-series').value.trim();
-            
             const item = {
                 id: eid || 'car-' + Date.now(),
                 sku: document.getElementById('form-sku').value.trim(),
                 brand: document.getElementById('form-brand').value,
                 model: document.getElementById('form-model').value.trim(),
-                series: seriesInput,
+                series: document.getElementById('form-series').value.trim(),
                 seriesNumber: document.getElementById('form-series-number').value.trim(),
                 year: document.getElementById('form-year').value,
                 scale: document.getElementById('form-scale').value,
@@ -638,9 +604,7 @@
 
         function cancelRegistration() {
             if(confirm("Deseja limpar o cadastro atual?")) {
-                clearDraft();
-                resetForm();
-                switchTab('inventario');
+                clearDraft(); resetForm(); switchTab('inventario');
             }
         }
 
@@ -649,7 +613,6 @@
             const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
             document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             document.getElementById('stat-total-brands').textContent = new Set(colecao.map(i => i.brand)).size;
-            
             const comps = colecao.filter(i => i.setStatus === 'Completo').length;
             document.getElementById('stat-set-progress').textContent = colecao.length > 0 ? Math.round((comps / colecao.length) * 100) + '%' : '0%';
             renderDashboardChartsAndRecents();
@@ -698,7 +661,6 @@
             });
 
             document.getElementById('inventory-counter').textContent = `Exibindo ${filtered.length} de ${colecao.length} carrinhos`;
-            
             if(viewMode === 'grid') {
                 document.getElementById('inventory-grid').classList.remove('hidden');
                 document.getElementById('inventory-table-container').classList.add('hidden');
@@ -763,7 +725,6 @@
                     }
                 });
             }
-
             document.getElementById('modal-btn-delete').onclick = (e) => { e.stopPropagation(); deleteItem(item.id); };
             document.getElementById('modal-btn-edit').onclick = (e) => { e.stopPropagation(); editItem(item); };
             document.getElementById('details-modal').className = "fixed inset-0 bg-darkBg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4";
@@ -869,15 +830,12 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
-            
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2";
             });
             document.getElementById('btn-' + tabId).className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md";
-
             if (tabId === 'dashboard') calculateMetrics();
             else if (tabId === 'inventario') applyFilters();
-            else if (tabId === 'cadastro') { /* Deixa os campos intactos se houver rascunho de RAM */ }
         }
 
         function exportDatabaseJSON() {
@@ -898,43 +856,66 @@
             if (CLIENT_ID && API_KEY && navigator.onLine) injectGoogleScripts();
         }
 
+        // ORQUESTRADOR DE CONEXÃO PERSISTENTE E LOGIN SILENCIOSO AUTOMÁTICO
+        function checkGisGapiAuth() {
+            if (gapiReady && gisReady && localStorage.getItem('gdrive_token')) {
+                try {
+                    // Tenta o login automático transparente sem abrir popups
+                    tokenClient.requestAccessToken({ prompt: 'none' });
+                } catch (e) { console.log("Silent auth failed"); }
+            }
+        }
+
         function injectGoogleScripts() {
             if (document.getElementById('gapi-script')) return;
             const gapiScript = document.createElement('script'); gapiScript.id = 'gapi-script'; gapiScript.src = "https://apis.google.com/js/api.js";
             gapiScript.onload = () => gapi.load('client', async () => {
                 try {
                     await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
-                    const savedToken = localStorage.getItem('gdrive_token');
-                    if (savedToken) { 
-                        gapi.client.setToken(JSON.parse(savedToken)); 
-                        isGoogleAuthenticated = true; 
-                        updateCloudUI(true);
-                        await pullAndSyncCloud(); 
-                    }
+                    gapiReady = true;
+                    checkGisGapiAuth();
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
 
             const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
-            gisScript.onload = () => { try { tokenClient = google.accounts.oauth2.initTokenClient({ client_id: CLIENT_ID, scope: SCOPES, callback: '' }); } catch(e) {} };
+            gisScript.onload = () => { 
+                try { 
+                    tokenClient = google.accounts.oauth2.initTokenClient({ 
+                        client_id: CLIENT_ID, 
+                        scope: SCOPES, 
+                        callback: async (resp) => {
+                            if (resp.error !== undefined) { 
+                                isGoogleAuthenticated = false; updateCloudUI(false); return; 
+                            }
+                            localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
+                            isGoogleAuthenticated = true; updateCloudUI(true); 
+                            await pullAndSyncCloud(); // Sincroniza PC e Celular na mesma hora
+                        } 
+                    }); 
+                    gisReady = true; checkGisGapiAuth();
+                } catch(e) {} 
+            };
             document.head.appendChild(gisScript);
         }
 
         function handleAuthClick() {
-            if (!navigator.onLine || !tokenClient) { alert("Sincronização indisponível. Requer conexão e chaves salvas."); return; }
-            tokenClient.callback = async (resp) => {
-                if (resp.error !== undefined) { throw (resp); }
-                localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
-                isGoogleAuthenticated = true; updateCloudUI(true); await pullAndSyncCloud();
-            };
-            tokenClient.requestAccessToken({prompt: gapi.client.getToken() === null ? 'consent' : ''});
+            if (!navigator.onLine || !tokenClient) { alert("Sincronização indisponível. Verifique rede/chaves."); return; }
+            tokenClient.requestAccessToken({prompt: 'consent'}); // Força login visível se o usuário clicar
         }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+            if (document.getElementById('lightbox-modal').className.includes('flex')) {
+                if (e.key === 'ArrowRight') navigateLightbox(1);
+                if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            }
+        });
 
         function updateCloudUI(authenticated) {
             const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
             const text = document.getElementById('status-text'); const btn = document.getElementById('btn-google-auth');
             const userLabel = document.getElementById('gdrive-user');
-            
             if (authenticated && isGoogleAuthenticated) {
                 indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brandGreen/10 border border-brandGreen/20 text-xs text-brandGreen font-medium";
                 dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Espelhamento Nuvem Ativo";
@@ -951,6 +932,7 @@
             try { const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); return response.result.files.length > 0 ? response.result.files[0].id : null; } catch (err) { return null; }
         }
 
+        // ESPELHAMENTO MULTI-DISPOSITIVO REAL (CRUZAMENTO DE DADOS PC E CELULAR VIA DRIVE)
         async function pullAndSyncCloud() {
             if (!isGoogleAuthenticated || !navigator.onLine || isSyncing) return;
             isSyncing = true;
@@ -967,13 +949,11 @@
 
                     cloudCollection.forEach(cItem => {
                         if (!mapColecao.has(cItem.id)) {
-                            mapColecao.set(cItem.id, cItem);
-                            mudou = true;
+                            mapColecao.set(cItem.id, cItem); mudou = true;
                         } else {
                             const lItem = mapColecao.get(cItem.id);
                             if ((cItem.lastUpdated || 0) > (lItem.lastUpdated || 0)) {
-                                mapColecao.set(cItem.id, cItem);
-                                mudou = true;
+                                mapColecao.set(cItem.id, cItem); mudou = true;
                             }
                         }
                     });
