@@ -102,7 +102,7 @@
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex items-center justify-between">
                     <div>
                         <p class="text-xs text-slate-400 uppercase tracking-wider font-semibold">Sets Completos</p>
-                        <h3 id="stat-set-progress" class="font-display font-bold text-3xl mt-1 text-slate-100">0%</h3>
+                        <h3 id="stat-set-progress" class="font-display font-bold text-3xl mt-1 text-slate-100">0/0</h3>
                     </div>
                     <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500"><i class="fa-solid fa-circle-check text-xl"></i></div>
                 </div>
@@ -131,14 +131,19 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500"><i class="fa-solid fa-magnifying-glass"></i></span>
                     <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Buscar por modelo, SKU, marca, série/coleção..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-10 pr-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandGreen transition">
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 w-full md:w-auto">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto">
                     <select id="filter-brand" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
                     <select id="filter-scale" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
-                    <select id="filter-condition" onchange="applyFilters()" class="col-span-2 sm:col-span-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
+                    <select id="filter-condition" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
                         <option value="">Qualquer Estado</option>
                         <option value="Na cartela">Na cartela</option>
                         <option value="Loose">Solto (Loose)</option>
                         <option value="Na caixa">Na caixa</option>
+                    </select>
+                    <select id="filter-set-status" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none">
+                        <option value="">Status da Série</option>
+                        <option value="Completo">Completas</option>
+                        <option value="Em progresso">Incompletas</option>
                     </select>
                 </div>
             </div>
@@ -176,12 +181,21 @@
                 <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
                 <form id="car-form" onsubmit="handleFormSubmit(event)" oninput="triggerAutoSave()" onchange="triggerAutoSave()" class="space-y-4">
                     <input type="hidden" id="edit-id">
+                    
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-brandCyan tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados)</label>
+                            <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-brandCyan/30 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandCyan">
+                            <p class="text-[10px] text-slate-500 mt-1">Preencha primeiro para auto-completar a marca.</p>
+                        </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Código de Barras / SKU</label>
                             <input type="text" id="form-sku" onblur="checkDuplicateSku()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
-                            <p id="sku-warning" class="hidden text-xs text-amber-500 font-semibold mt-1">SKU já consta na sua Garagem!</p>
+                            <p id="sku-warning" class="hidden text-[10px] text-amber-500 font-semibold mt-1">SKU já consta na sua Garagem!</p>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider">Fabricante (Marca)</label>
@@ -189,16 +203,9 @@
                             </div>
                             <select id="form-brand" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-300 focus:outline-none focus:border-brandGreen"></select>
                         </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Modelo do Carro *</label>
                             <input type="text" id="form-model" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados, Boulevard)</label>
-                            <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                     </div>
 
@@ -245,7 +252,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (Clique para abrir Câmera ou Pasta de Arquivos)</label>
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura</label>
                         <div class="grid grid-cols-3 gap-4">
                             <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
                                 <input type="file" id="file-photo1" onchange="previewImage(event, 1)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
@@ -408,11 +415,8 @@
                 populateBrandSelects();
                 populateScaleSelects();
                 
-                // RESTAURAÇÃO CRÍTICA: Desvia imediatamente se houver rascunho de RAM ativo
                 const rascunhoDetectado = checkRestoreDraft();
-                if (!rascunhoDetectado) {
-                    switchTab('dashboard'); 
-                }
+                if (!rascunhoDetectado) { switchTab('dashboard'); }
 
                 document.getElementById('cfg-client-id').value = CLIENT_ID;
                 document.getElementById('cfg-api-key').value = API_KEY;
@@ -421,7 +425,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // SALVAMENTO AUTOMÁTICO EM BACKGROUND
         function triggerAutoSave() {
             if (document.getElementById('edit-id').value) return; 
             const draft = {
@@ -561,15 +564,33 @@
             applyFilters();
         }
 
+        function showNewBrandModal() { document.getElementById('new-brand-modal').classList.remove('hidden'); document.getElementById('new-brand-modal').classList.add('flex'); }
+        function closeNewBrandModal() { document.getElementById('new-brand-modal').classList.add('hidden'); document.getElementById('new-brand-input').value = ''; }
+        function saveNewBrand() {
+            const v = document.getElementById('new-brand-input').value.trim(); if (!v) return;
+            const tx = db.transaction(['marcas_custom'], 'readwrite'); tx.objectStore('marcas_custom').put({nome: v});
+            tx.oncomplete = async () => { await loadCustomLists(); populateBrandSelects(); document.getElementById('form-brand').value = v; closeNewBrandModal(); triggerAutoSave(); };
+        }
+
+        function showNewScaleModal() { document.getElementById('new-scale-modal').classList.remove('hidden'); document.getElementById('new-scale-modal').classList.add('flex'); }
+        function closeNewScaleModal() { document.getElementById('new-scale-modal').classList.add('hidden'); document.getElementById('new-scale-input').value = ''; }
+        function saveNewScale() {
+            const v = document.getElementById('new-scale-input').value.trim(); if (!v) return;
+            const tx = db.transaction(['escalas_custom'], 'readwrite'); tx.objectStore('escalas_custom').put({nome: v});
+            tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); triggerAutoSave(); applyFilters(); };
+        }
+
         async function handleFormSubmit(e) {
             e.preventDefault();
             const eid = document.getElementById('edit-id').value;
+            const seriesInput = document.getElementById('form-series').value.trim();
+            
             const item = {
                 id: eid || 'car-' + Date.now(),
                 sku: document.getElementById('form-sku').value.trim(),
                 brand: document.getElementById('form-brand').value,
                 model: document.getElementById('form-model').value.trim(),
-                series: document.getElementById('form-series').value.trim(),
+                series: seriesInput,
                 seriesNumber: document.getElementById('form-series-number').value.trim(),
                 year: document.getElementById('form-year').value,
                 scale: document.getElementById('form-scale').value,
@@ -608,13 +629,28 @@
             }
         }
 
+        // METRICA DE FRAÇÃO INTELIGENTE: SÉRIES COMPLETAS / SÉRIES TOTAIS
         function calculateMetrics() {
             document.getElementById('stat-total-items').textContent = colecao.length;
             const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
             document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
             document.getElementById('stat-total-brands').textContent = new Set(colecao.map(i => i.brand)).size;
-            const comps = colecao.filter(i => i.setStatus === 'Completo').length;
-            document.getElementById('stat-set-progress').textContent = colecao.length > 0 ? Math.round((comps / colecao.length) * 100) + '%' : '0%';
+            
+            const seriesMap = new Map();
+            colecao.forEach(i => {
+                if (i.series && i.series.trim() !== '') {
+                    if (!seriesMap.has(i.series)) {
+                        seriesMap.set(i.series, i.setStatus);
+                    } else if (i.setStatus === 'Em progresso') {
+                        seriesMap.set(i.series, 'Em progresso'); 
+                    }
+                }
+            });
+            
+            let completas = 0;
+            seriesMap.forEach(status => { if (status === 'Completo') completas++; });
+            
+            document.getElementById('stat-set-progress').textContent = completas + '/' + seriesMap.size;
             renderDashboardChartsAndRecents();
         }
 
@@ -651,13 +687,17 @@
             const brand = document.getElementById('filter-brand').value;
             const scale = document.getElementById('filter-scale').value;
             const cond = document.getElementById('filter-condition').value;
+            const status = document.getElementById('filter-set-status').value;
 
             const filtered = colecao.filter(i => {
                 return (i.model.toLowerCase().includes(q) || 
                         i.brand.toLowerCase().includes(q) || 
                         (i.series && i.series.toLowerCase().includes(q)) || 
                         (i.sku && i.sku.toLowerCase().includes(q))) &&
-                       (!brand || i.brand === brand) && (!scale || i.scale === scale) && (!cond || i.condition === cond);
+                       (!brand || i.brand === brand) && 
+                       (!scale || i.scale === scale) && 
+                       (!cond || i.condition === cond) &&
+                       (!status || i.setStatus === status);
             });
 
             document.getElementById('inventory-counter').textContent = `Exibindo ${filtered.length} de ${colecao.length} carrinhos`;
@@ -856,13 +896,22 @@
             if (CLIENT_ID && API_KEY && navigator.onLine) injectGoogleScripts();
         }
 
-        // ORQUESTRADOR DE CONEXÃO PERSISTENTE E LOGIN SILENCIOSO AUTOMÁTICO
+        // TENTATIVA DE RENOVAÇÃO SILENCIOSA DO TOKEN (BYPASS AUTOMÁTICO)
         function checkGisGapiAuth() {
             if (gapiReady && gisReady && localStorage.getItem('gdrive_token')) {
                 try {
-                    // Tenta o login automático transparente sem abrir popups
-                    tokenClient.requestAccessToken({ prompt: 'none' });
-                } catch (e) { console.log("Silent auth failed"); }
+                    const savedToken = JSON.parse(localStorage.getItem('gdrive_token'));
+                    gapi.client.setToken(savedToken);
+                    // Faz um micro-teste para ver se a chave ainda é válida
+                    gapi.client.drive.files.list({ pageSize: 1, spaces: 'appDataFolder', fields: 'files(id)' })
+                        .then(async () => {
+                            isGoogleAuthenticated = true; updateCloudUI(true); await pullAndSyncCloud();
+                        })
+                        .catch(() => {
+                            // Chave morreu (passou de 1h). Tenta renovar de fundo sem pop-up
+                            tokenClient.requestAccessToken({ prompt: 'none' });
+                        });
+                } catch (e) { console.log(e); }
             }
         }
 
@@ -872,8 +921,7 @@
             gapiScript.onload = () => gapi.load('client', async () => {
                 try {
                     await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
-                    gapiReady = true;
-                    checkGisGapiAuth();
+                    gapiReady = true; checkGisGapiAuth();
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
@@ -890,7 +938,7 @@
                             }
                             localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
                             isGoogleAuthenticated = true; updateCloudUI(true); 
-                            await pullAndSyncCloud(); // Sincroniza PC e Celular na mesma hora
+                            await pullAndSyncCloud(); 
                         } 
                     }); 
                     gisReady = true; checkGisGapiAuth();
@@ -901,7 +949,7 @@
 
         function handleAuthClick() {
             if (!navigator.onLine || !tokenClient) { alert("Sincronização indisponível. Verifique rede/chaves."); return; }
-            tokenClient.requestAccessToken({prompt: 'consent'}); // Força login visível se o usuário clicar
+            tokenClient.requestAccessToken({prompt: 'consent'}); 
         }
 
         document.addEventListener('keydown', (e) => {
@@ -932,7 +980,6 @@
             try { const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); return response.result.files.length > 0 ? response.result.files[0].id : null; } catch (err) { return null; }
         }
 
-        // ESPELHAMENTO MULTI-DISPOSITIVO REAL (CRUZAMENTO DE DADOS PC E CELULAR VIA DRIVE)
         async function pullAndSyncCloud() {
             if (!isGoogleAuthenticated || !navigator.onLine || isSyncing) return;
             isSyncing = true;
