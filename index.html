@@ -185,8 +185,8 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold uppercase text-brandCyan tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados)</label>
-                            <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-brandCyan/30 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandCyan">
-                            <p class="text-[10px] text-slate-500 mt-1">Preencha primeiro para auto-completar a marca.</p>
+                            <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-brandCyan/30 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandCyan transition-colors">
+                            <p class="text-[10px] text-slate-500 mt-1">Preencha primeiro para auto-completar marca/escala.</p>
                         </div>
                         <div>
                             <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Código de Barras / SKU</label>
@@ -323,11 +323,18 @@
         </section>
     </main>
 
-    <div id="details-modal" class="fixed inset-0 bg-darkBg/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
-        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh]">
-            <div class="flex justify-between items-center p-4 border-b border-darkBorder bg-slate-950/40">
-                <div><h3 id="modal-brand-model" class="font-display font-bold text-lg text-slate-100"></h3><p id="modal-sku" class="text-xs text-slate-400"></p></div>
-                <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-darkBorder text-slate-400 hover:text-red-400 flex items-center justify-center"><i class="fa-solid fa-x"></i></button>
+    <div id="details-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-md hidden items-center justify-center z-50 p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
+            <div class="flex justify-between items-center p-3 border-b border-darkBorder bg-slate-950/80">
+                <button onclick="navigateItem(-1)" class="w-9 h-9 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-brandGreen hover:border-brandGreen flex items-center justify-center transition"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="text-center px-2 flex-grow overflow-hidden">
+                    <h3 id="modal-brand-model" class="font-display font-bold text-base text-slate-100 truncate"></h3>
+                    <p id="modal-sku" class="text-[10px] text-slate-400 truncate"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="navigateItem(1)" class="w-9 h-9 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-brandGreen hover:border-brandGreen flex items-center justify-center transition"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button onclick="closeModal()" class="w-9 h-9 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition"><i class="fa-solid fa-x"></i></button>
+                </div>
             </div>
             <div class="p-6 overflow-y-auto space-y-6 flex-grow">
                 <div class="grid grid-cols-3 gap-3" id="modal-photos-grid"></div>
@@ -340,12 +347,12 @@
                     <div><p class="text-[10px] text-slate-500 font-bold uppercase">Preço Pago</p><p id="modal-price" class="font-semibold text-brandGreen"></p></div>
                     <div><p class="text-[10px] text-slate-500 font-bold uppercase">Estado</p><p id="modal-condition" class="font-semibold text-slate-200"></p></div>
                     <div><p class="text-[10px] text-slate-500 font-bold uppercase">Data</p><p id="modal-date" class="font-semibold text-slate-200"></p></div>
-                    <div class="col-span-2 bg-slate-950 p-3 rounded-xl border border-darkBorder"><p class="text-[10px] text-slate-500 font-bold uppercase">Notas</p><p id="modal-notes" class="text-xs text-slate-300 mt-1 whitespace-pre-wrap"></p></div>
+                    <div class="col-span-2 bg-slate-950 p-3 rounded-xl border border-darkBorder"><p class="text-[10px] text-slate-500 font-bold uppercase">Notas / Observações</p><p id="modal-notes" class="text-xs text-slate-300 mt-1 whitespace-pre-wrap"></p></div>
                 </div>
             </div>
             <div class="p-4 border-t border-darkBorder bg-slate-950/40 flex justify-between">
-                <button id="modal-btn-delete" class="px-4 py-2 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500 font-bold text-xs"><i class="fa-solid fa-trash"></i> Excluir</button>
-                <button id="modal-btn-edit" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg font-bold text-xs"><i class="fa-solid fa-pen-to-square"></i> Editar</button>
+                <button id="modal-btn-delete" class="px-4 py-2 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500 font-bold text-xs"><i class="fa-solid fa-trash"></i> Excluir Registro</button>
+                <button id="modal-btn-edit" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg font-bold text-xs shadow-md"><i class="fa-solid fa-pen-to-square"></i> Editar Miniatura</button>
             </div>
         </div>
     </div>
@@ -388,7 +395,11 @@
         let tokenClient = null; let isGoogleAuthenticated = false; let db = null;
         let marcas = ['Hot Wheels', 'Matchbox', 'Majorette', 'Greenlight', 'Mini GT', 'Maisto', 'Jada Toys', 'M2 Machines', 'Auto World'];
         let escalas = ['1:64', '1:43', '1:32', '1:18', 'Outra'];
+        
         let colecao = [];
+        let currentFilteredItems = []; // Guarda a lista filtrada para navegação
+        let currentItemIndex = 0;      // Guarda o índice atual do modal
+        
         let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
         let currentActivePhotos = []; let currentLightboxIndex = 0;
         let isSyncing = false; let gapiReady = false; let gisReady = false;
@@ -438,7 +449,7 @@
                 price: document.getElementById('form-price').value,
                 date: document.getElementById('form-date').value,
                 condition: document.getElementById('form-condition').value,
-                notes: document.getElementById('form-notes').value,
+                notes: document.getElementById('form-notes').value, // BUGS FIXADOS: Notas salvas no rascunho
                 photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
             };
             localStorage.setItem('gv_cadastro_draft', JSON.stringify(draft));
@@ -460,7 +471,7 @@
                 document.getElementById('form-price').value = draft.price || '';
                 document.getElementById('form-date').value = draft.date || '';
                 document.getElementById('form-condition').value = draft.condition || 'Na cartela';
-                document.getElementById('form-notes').value = draft.notes || '';
+                document.getElementById('form-notes').value = draft.notes || ''; // Restaura notas perfeitamente
                 
                 draft.photos.forEach((p, idx) => {
                     const i = idx + 1;
@@ -597,6 +608,7 @@
                 condition: document.getElementById('form-condition').value,
                 price: parseFloat(document.getElementById('form-price').value) || 0,
                 date: document.getElementById('form-date').value || new Date().toISOString().split('T')[0],
+                notes: document.getElementById('form-notes').value.trim(), // BUG FIXADO AQUI
                 photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]],
                 lastUpdated: Date.now()
             };
@@ -629,7 +641,6 @@
             }
         }
 
-        // METRICA DE FRAÇÃO INTELIGENTE: SÉRIES COMPLETAS / SÉRIES TOTAIS
         function calculateMetrics() {
             document.getElementById('stat-total-items').textContent = colecao.length;
             const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
@@ -649,7 +660,6 @@
             
             let completas = 0;
             seriesMap.forEach(status => { if (status === 'Completo') completas++; });
-            
             document.getElementById('stat-set-progress').textContent = completas + '/' + seriesMap.size;
             renderDashboardChartsAndRecents();
         }
@@ -689,7 +699,7 @@
             const cond = document.getElementById('filter-condition').value;
             const status = document.getElementById('filter-set-status').value;
 
-            const filtered = colecao.filter(i => {
+            currentFilteredItems = colecao.filter(i => {
                 return (i.model.toLowerCase().includes(q) || 
                         i.brand.toLowerCase().includes(q) || 
                         (i.series && i.series.toLowerCase().includes(q)) || 
@@ -700,15 +710,16 @@
                        (!status || i.setStatus === status);
             });
 
-            document.getElementById('inventory-counter').textContent = `Exibindo ${filtered.length} de ${colecao.length} carrinhos`;
+            document.getElementById('inventory-counter').textContent = `Exibindo ${currentFilteredItems.length} de ${colecao.length} carrinhos`;
+            
             if(viewMode === 'grid') {
                 document.getElementById('inventory-grid').classList.remove('hidden');
                 document.getElementById('inventory-table-container').classList.add('hidden');
-                renderGrid(filtered);
+                renderGrid(currentFilteredItems);
             } else {
                 document.getElementById('inventory-grid').classList.add('hidden');
                 document.getElementById('inventory-table-container').classList.remove('hidden');
-                renderTable(filtered);
+                renderTable(currentFilteredItems);
             }
         }
 
@@ -740,9 +751,13 @@
         }
 
         function showDetails(id) {
-            const item = colecao.find(i => i.id === id); if (!item) return;
+            // Acha o índice global do item na lista atual filtrada para navegação
+            currentItemIndex = currentFilteredItems.findIndex(i => i.id === id);
+            const item = currentFilteredItems[currentItemIndex];
+            if (!item) return;
+
             document.getElementById('modal-brand-model').textContent = item.model;
-            document.getElementById('modal-sku').textContent = item.sku ? `Código / SKU: ${item.sku}` : 'Sem SKU';
+            document.getElementById('modal-sku').textContent = item.sku ? `SKU: ${item.sku}` : 'Sem SKU';
             document.getElementById('modal-brand').textContent = item.brand;
             document.getElementById('modal-series').textContent = item.series || '-';
             document.getElementById('modal-series-number').textContent = item.seriesNumber || '-';
@@ -751,7 +766,7 @@
             document.getElementById('modal-price').textContent = `R$ ${item.price.toFixed(2)}`;
             document.getElementById('modal-condition').textContent = item.condition;
             document.getElementById('modal-date').textContent = item.date;
-            document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.';
+            document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.'; // AGORA APARECE!
             
             currentActivePhotos = item.photos.filter(p => p !== '');
             const grid = document.getElementById('modal-photos-grid'); grid.innerHTML = '';
@@ -767,7 +782,16 @@
             }
             document.getElementById('modal-btn-delete').onclick = (e) => { e.stopPropagation(); deleteItem(item.id); };
             document.getElementById('modal-btn-edit').onclick = (e) => { e.stopPropagation(); editItem(item); };
-            document.getElementById('details-modal').className = "fixed inset-0 bg-darkBg/80 backdrop-blur-sm flex items-center justify-center z-50 p-4";
+            document.getElementById('details-modal').className = "fixed inset-0 bg-darkBg/90 backdrop-blur-md flex items-center justify-center z-50 p-4";
+        }
+
+        // NAVEGAÇÃO ENTRE ITENS DO INVENTÁRIO (Próximo / Anterior)
+        function navigateItem(direction) {
+            if(currentFilteredItems.length <= 1) return;
+            currentItemIndex += direction;
+            if(currentItemIndex >= currentFilteredItems.length) currentItemIndex = 0;
+            if(currentItemIndex < 0) currentItemIndex = currentFilteredItems.length - 1;
+            showDetails(currentFilteredItems[currentItemIndex].id);
         }
 
         function openLightbox(index) {
@@ -896,32 +920,31 @@
             if (CLIENT_ID && API_KEY && navigator.onLine) injectGoogleScripts();
         }
 
-        // TENTATIVA DE RENOVAÇÃO SILENCIOSA DO TOKEN (BYPASS AUTOMÁTICO)
-        function checkGisGapiAuth() {
-            if (gapiReady && gisReady && localStorage.getItem('gdrive_token')) {
-                try {
-                    const savedToken = JSON.parse(localStorage.getItem('gdrive_token'));
-                    gapi.client.setToken(savedToken);
-                    // Faz um micro-teste para ver se a chave ainda é válida
-                    gapi.client.drive.files.list({ pageSize: 1, spaces: 'appDataFolder', fields: 'files(id)' })
-                        .then(async () => {
-                            isGoogleAuthenticated = true; updateCloudUI(true); await pullAndSyncCloud();
-                        })
-                        .catch(() => {
-                            // Chave morreu (passou de 1h). Tenta renovar de fundo sem pop-up
-                            tokenClient.requestAccessToken({ prompt: 'none' });
-                        });
-                } catch (e) { console.log(e); }
-            }
-        }
-
+        // SEGURANÇA MÁXIMA DE CONEXÃO: Confia no token local e só expulsa se a API rejeitar (401)
         function injectGoogleScripts() {
             if (document.getElementById('gapi-script')) return;
             const gapiScript = document.createElement('script'); gapiScript.id = 'gapi-script'; gapiScript.src = "https://apis.google.com/js/api.js";
             gapiScript.onload = () => gapi.load('client', async () => {
                 try {
                     await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
-                    gapiReady = true; checkGisGapiAuth();
+                    gapiReady = true;
+                    
+                    const savedTokenRaw = localStorage.getItem('gdrive_token');
+                    if (savedTokenRaw) {
+                        const savedToken = JSON.parse(savedTokenRaw);
+                        gapi.client.setToken(savedToken);
+                        
+                        // Assumimos que está autenticado até que se prove o contrário
+                        isGoogleAuthenticated = true; 
+                        updateCloudUI(true);
+                        
+                        // Tenta sincronizar. Se o token expirou (passou de 1h), a função de pull vai pegar o erro e lidar com isso.
+                        pullAndSyncCloud().catch((err) => {
+                            if(err && err.status === 401) {
+                                isGoogleAuthenticated = false; updateCloudUI(false);
+                            }
+                        });
+                    }
                 } catch(e) {}
             });
             document.head.appendChild(gapiScript);
@@ -941,7 +964,7 @@
                             await pullAndSyncCloud(); 
                         } 
                     }); 
-                    gisReady = true; checkGisGapiAuth();
+                    gisReady = true;
                 } catch(e) {} 
             };
             document.head.appendChild(gisScript);
@@ -951,14 +974,6 @@
             if (!navigator.onLine || !tokenClient) { alert("Sincronização indisponível. Verifique rede/chaves."); return; }
             tokenClient.requestAccessToken({prompt: 'consent'}); 
         }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeLightbox();
-            if (document.getElementById('lightbox-modal').className.includes('flex')) {
-                if (e.key === 'ArrowRight') navigateLightbox(1);
-                if (e.key === 'ArrowLeft') navigateLightbox(-1);
-            }
-        });
 
         function updateCloudUI(authenticated) {
             const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
@@ -977,7 +992,13 @@
 
         async function getDriveFileId() {
             if (!isGoogleAuthenticated) return null;
-            try { const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); return response.result.files.length > 0 ? response.result.files[0].id : null; } catch (err) { return null; }
+            try { 
+                const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); 
+                return response.result.files.length > 0 ? response.result.files[0].id : null; 
+            } catch (err) { 
+                if(err.status === 401) throw err; // Repassa o erro de expiração de token para a função pai
+                return null; 
+            }
         }
 
         async function pullAndSyncCloud() {
@@ -1017,9 +1038,13 @@
                         };
                     }
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) { 
+                if (e.status === 401) {
+                    isGoogleAuthenticated = false; updateCloudUI(false);
+                }
+            }
             isSyncing = false;
-            await pushToCloud(); 
+            if(isGoogleAuthenticated) await pushToCloud(); 
         }
 
         async function pushToCloud() {
@@ -1031,7 +1056,9 @@
                 await gapi.client.request({ 'path': '/upload/drive/v3/files' + (fileId ? '/' + fileId : ''), 'method': fileId ? 'PATCH' : 'POST', 'params': {'uploadType': 'multipart'}, 'headers': {'Content-Type': 'multipart/related; boundary="' + boundary + '"'}, 'body': multipartRequestBody });
                 document.getElementById('gdrive-sync-time').textContent = `Último backup: Hoje às ${new Date().toLocaleTimeString('pt-BR')}`;
                 updateCloudUI(true);
-            } catch (e) {}
+            } catch (e) {
+                if (e.status === 401) { isGoogleAuthenticated = false; updateCloudUI(false); }
+            }
         }
 
         async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados locais espelhados e salvos no Drive."); }
