@@ -132,7 +132,7 @@
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 flex flex-col md:flex-row gap-4 items-center">
                 <div class="relative w-full md:flex-grow">
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Buscar por modelo, SKU, marca, série/coleção..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-10 pr-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandGreen transition">
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Buscar por modelo, SKU, marca, série..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-10 pr-4 py-3 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brandGreen transition">
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full md:w-auto">
                     <select id="filter-brand" onchange="applyFilters()" class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-300 text-sm focus:outline-none"></select>
@@ -179,7 +179,7 @@
             </div>
         </section>
 
-        <!-- FORMULÁRIO -->
+        <!-- FORMULÁRIO DE CADASTRO -->
         <section id="tab-cadastro" class="tab-content hidden max-w-3xl mx-auto">
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-6">
                 <h2 id="form-title" class="font-display font-bold text-xl">Registrar Nova Miniatura</h2>
@@ -188,7 +188,7 @@
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-brandCyan tracking-wider mb-1">Série / Coleção (Ex: Agro, Tunados)</label>
+                            <label class="block text-xs font-bold uppercase text-brandCyan tracking-wider mb-1">Série / Coleção (Ex: Avulsos, Agro, Boulevard)</label>
                             <input type="text" id="form-series" onblur="checkAutocompleteSeries()" class="w-full bg-slate-950 border border-brandCyan/30 rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandCyan transition-colors">
                             <p class="text-[10px] text-slate-500 mt-1">Preencha primeiro para auto-completar marca/escala.</p>
                         </div>
@@ -215,7 +215,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série (Ex: 1/5)</label>
+                            <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série (Ex: 1/5 ou 1/1)</label>
                             <input type="text" id="form-series-number" placeholder="Ex: 1/5" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                         <div>
@@ -326,12 +326,13 @@
                 </div>
             </div>
 
-            <!-- NOVA CAIXA PRETA: LOG DE ERROS -->
+            <!-- CAIXA PRETA: LOG DE ERROS -->
             <div class="bg-darkCard border border-red-500/20 rounded-2xl p-6 space-y-4 shadow-lg shadow-red-500/5">
                 <h2 class="font-display font-bold text-xl text-red-400 flex items-center gap-2"><i class="fa-solid fa-bug"></i> Diagnóstico e Caixa-Preta</h2>
-                <p class="text-xs text-slate-400">Se o aplicativo travar ou ocultar dados, os erros invisíveis ficarão registrados aqui para facilitar a nossa correção técnica.</p>
-                <div class="grid grid-cols-1 gap-4">
-                    <button onclick="viewLogs()" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-terminal"></i> Ver Registro de Erros Internos</button>
+                <p class="text-xs text-slate-400">Se o aplicativo travar ou dados sumirem, os erros invisíveis ficarão registrados aqui.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="viewLogs()" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-terminal"></i> Ver Registro de Erros</button>
+                    <button onclick="logError('Teste da Caixa-Preta: Sistema operando perfeitamente!'); viewLogs();" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-brandCyan font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-flask"></i> Simular Erro de Teste</button>
                 </div>
                 <div id="log-container" class="hidden mt-2 p-3 bg-slate-950 border border-darkBorder rounded-lg max-h-40 overflow-y-auto text-[10px] text-slate-400 font-mono space-y-1"></div>
             </div>
@@ -381,7 +382,7 @@
         <button onclick="navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur"><i class="fa-solid fa-chevron-right"></i></button>
     </div>
 
-    <!-- MODAIS GENÉRICOS (Nova Marca/Escala) -->
+    <!-- MODAIS GENÉRICOS -->
     <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Adicionar Nova Marca</h3>
@@ -414,13 +415,9 @@
             localStorage.setItem('gv_error_logs', JSON.stringify(errorLogs));
             console.error(err);
         }
-        window.onerror = function(msg, url, line, col, error) {
-            logError(`Crash Crítico: ${msg} | Linha: ${line}`);
-            return false;
-        };
-        window.onunhandledrejection = function(e) {
-            logError(`Promise Rejeitada: ${e.reason}`);
-        };
+        window.onerror = function(msg, url, line) { logError(`Crash Crítico: ${msg} | Linha: ${line}`); return false; };
+        window.onunhandledrejection = function(e) { logError(`Promise Rejeitada: ${e.reason}`); };
+        
         function viewLogs() {
             const c = document.getElementById('log-container');
             c.classList.toggle('hidden');
@@ -428,7 +425,7 @@
             else c.innerHTML = errorLogs.map(e => `<div class="border-b border-darkBorder pb-1 mb-1">${e}</div>`).join('');
         }
 
-        // ------------------ CONFIGURAÇÕES GERAIS ------------------
+        // ------------------ VARIÁVEIS GLOBAIS ------------------
         let CLIENT_ID = localStorage.getItem('cfg_client_id') || ''; 
         let API_KEY = localStorage.getItem('cfg_api_key') || '';
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
@@ -446,10 +443,25 @@
         let currentActivePhotos = []; let currentLightboxIndex = 0;
         let isSyncing = false; let gapiReady = false; let gisReady = false;
 
+        // VERIFICADOR DE SÉRIES DINÂMICAS (PALAVRAS-CHAVE PERMITIDAS)
+        function isDynamicSeries(seriesName) {
+            if (!seriesName) return false;
+            const name = seriesName.toLowerCase();
+            const keywords = [
+                'avulso', 'avulsos', 'sem serie', 'sem série', 'diversos', 'variados',
+                'aleatorio', 'aleatorios', 'aleatório', 'aleatórios', 'misto', 'mistos',
+                'estragado', 'estragados', 'sucata', 'desmanche', 'para restauro', 'restaurar',
+                'repetido', 'repetidos', 'duplicado', 'duplicados', 'duplicata',
+                'doacao', 'doações', 'doação', 'presente', 'presentes'
+            ];
+            return keywords.some(kw => name.includes(kw));
+        }
+
+        // ------------------ INICIALIZAÇÃO E BANCO DE DADOS ------------------
         function initDB() {
             return new Promise((resolve, reject) => {
                 const request = indexedDB.open('GaragemVirtualDB_V5', 1);
-                request.onerror = (e) => { logError("Falha ao abrir Banco de Dados: " + e.target.errorCode); reject(e.target.errorCode); };
+                request.onerror = (e) => { logError("Falha ao abrir DB: " + e.target.errorCode); reject(e.target.errorCode); };
                 request.onsuccess = (e) => { db = e.target.result; resolve(); };
                 request.onupgradeneeded = (e) => {
                     const dbInstance = e.target.result;
@@ -475,7 +487,7 @@
                 document.getElementById('cfg-api-key').value = API_KEY;
                 
                 if (navigator.onLine && CLIENT_ID && API_KEY) injectGoogleScripts();
-            } catch (e) { logError("Erro Crítico ao iniciar o App: " + e.message); }
+            } catch (e) { logError("Erro ao iniciar App: " + e.message); }
         }
 
         function triggerAutoSave() {
@@ -496,7 +508,7 @@
                     photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
                 };
                 localStorage.setItem('gv_cadastro_draft', JSON.stringify(draft));
-            } catch (error) { logError("Falha no Auto-Save: " + error.message); }
+            } catch (e) { logError("Falha Auto-Save: " + e.message); }
         }
 
         function checkRestoreDraft() {
@@ -538,7 +550,8 @@
         function checkAutocompleteSeries() {
             const seriesName = document.getElementById('form-series').value.trim().toLowerCase();
             if(!seriesName) return;
-            const match = colecao.find(i => i.series && i.series.toLowerCase() === seriesName);
+            const activeColecao = colecao.filter(i => !i.deleted);
+            const match = activeColecao.find(i => i.series && i.series.toLowerCase() === seriesName);
             if(match) {
                 if(!document.getElementById('form-brand').value) document.getElementById('form-brand').value = match.brand;
                 if(!document.getElementById('form-scale').value) document.getElementById('form-scale').value = match.scale;
@@ -548,7 +561,7 @@
 
         function getSeriesStatus(seriesName) {
             if(!seriesName) return 'Completo';
-            const itemsInSeries = colecao.filter(i => i.series && i.series.toLowerCase() === seriesName.toLowerCase());
+            const itemsInSeries = colecao.filter(i => i.series && i.series.toLowerCase() === seriesName.toLowerCase() && !i.deleted);
             if(itemsInSeries.length === 0) return 'Em progresso';
             
             let totalExpected = 0; let registeredNumbers = new Set();
@@ -635,12 +648,13 @@
             tx.oncomplete = async () => { await loadCustomLists(); populateScaleSelects(); document.getElementById('form-scale').value = v; closeNewScaleModal(); triggerAutoSave(); applyFilters(); };
         }
 
+        // ------------------ SALVAMENTO E AUTOMAÇÃO DE FRAÇÃO DINÂMICA ------------------
         async function handleFormSubmit(e) {
             e.preventDefault();
             try {
                 const eid = document.getElementById('edit-id').value;
                 const seriesInput = document.getElementById('form-series').value.trim();
-                const seriesNumInput = document.getElementById('form-series-number').value.trim();
+                let seriesNumInput = document.getElementById('form-series-number').value.trim();
                 
                 const item = {
                     id: eid || 'car-' + Date.now(),
@@ -656,35 +670,35 @@
                     date: document.getElementById('form-date').value || new Date().toISOString().split('T')[0],
                     notes: document.getElementById('form-notes').value.trim(), 
                     photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]],
-                    lastUpdated: Date.now()
+                    lastUpdated: Date.now(),
+                    deleted: false
                 };
 
-                // LÓGICA DO DENOMINADOR AUTOMÁTICO PARA SÉRIES (EX: Soltos 1/1 -> 1/3)
-                let newDenom = '';
-                if(seriesNumInput.includes('/')) {
-                    newDenom = seriesNumInput.split('/')[1].trim();
-                }
-
                 const tx = db.transaction(['colecao'], 'readwrite');
-                tx.onerror = (err) => { logError("Transação BD Abortada: " + err.target.error); };
-                
                 const store = tx.objectStore('colecao');
 
-                if (seriesInput && newDenom) {
-                    colecao.forEach(existingItem => {
-                        if (existingItem.series === seriesInput && existingItem.id !== item.id) {
-                            if (existingItem.seriesNumber && existingItem.seriesNumber.includes('/')) {
-                                const num = existingItem.seriesNumber.split('/')[0].trim();
-                                existingItem.seriesNumber = `${num}/${newDenom}`;
-                                store.put(existingItem);
-                            } else if (existingItem.seriesNumber) {
-                                existingItem.seriesNumber = `${existingItem.seriesNumber}/${newDenom}`;
-                                store.put(existingItem);
-                            }
-                        }
-                    });
-                }
+                // REORDENAÇÃO APENAS PARA SÉRIES DINÂMICAS (AVULSOS, DIVERSOS, SUCATA...)
+                if (seriesInput && isDynamicSeries(seriesInput)) {
+                    const activeInSeries = colecao.filter(i => i.series === seriesInput && i.id !== item.id && !i.deleted);
+                    const newTotal = activeInSeries.length + 1;
 
+                    // Reordena sequencialmente do 1 até (N-1)
+                    activeInSeries.sort((a, b) => {
+                        const aN = parseInt((a.seriesNumber || '0').split('/')[0]) || 0;
+                        const bN = parseInt((b.seriesNumber || '0').split('/')[0]) || 0;
+                        return aN - bN;
+                    });
+
+                    activeInSeries.forEach((existingItem, idx) => {
+                        existingItem.seriesNumber = `${idx + 1}/${newTotal}`;
+                        existingItem.lastUpdated = Date.now();
+                        store.put(existingItem);
+                    });
+
+                    // Define o item novo como o último da sequência (N/N)
+                    item.seriesNumber = `${newTotal}/${newTotal}`;
+                }
+                
                 store.put(item);
 
                 tx.oncomplete = async () => { 
@@ -706,11 +720,13 @@
                 const tx = db.transaction(['colecao'], 'readwrite');
                 const store = tx.objectStore('colecao');
                 colecao.forEach(item => {
-                    item.setStatus = getSeriesStatus(item.series);
-                    store.put(item);
+                    if (!item.deleted) {
+                        item.setStatus = getSeriesStatus(item.series);
+                        store.put(item);
+                    }
                 });
                 tx.oncomplete = async () => { await loadCollection(); calculateMetrics(); };
-            } catch (error) { logError("Erro ao calcular status das séries: " + error.message); }
+            } catch (error) { logError("Erro calcular series: " + error.message); }
         }
 
         function cancelRegistration() {
@@ -721,50 +737,48 @@
 
         function calculateMetrics() {
             try {
-                document.getElementById('stat-total-items').textContent = colecao.length;
-                const invest = colecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
+                const activeColecao = colecao.filter(i => !i.deleted);
+                document.getElementById('stat-total-items').textContent = activeColecao.length;
+                const invest = activeColecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
                 document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-                document.getElementById('stat-total-brands').textContent = new Set(colecao.map(i => i.brand)).size;
+                document.getElementById('stat-total-brands').textContent = new Set(activeColecao.map(i => i.brand)).size;
                 
                 const seriesMap = new Map();
-                colecao.forEach(i => {
+                activeColecao.forEach(i => {
                     if (i.series && i.series.trim() !== '') {
-                        if (!seriesMap.has(i.series)) {
-                            seriesMap.set(i.series, i.setStatus);
-                        } else if (i.setStatus === 'Em progresso') {
-                            seriesMap.set(i.series, 'Em progresso'); 
-                        }
+                        if (!seriesMap.has(i.series)) { seriesMap.set(i.series, i.setStatus); } 
+                        else if (i.setStatus === 'Em progresso') { seriesMap.set(i.series, 'Em progresso'); }
                     }
                 });
                 
                 let completas = 0;
                 seriesMap.forEach(status => { if (status === 'Completo') completas++; });
                 document.getElementById('stat-set-progress').textContent = completas + '/' + seriesMap.size;
-                renderDashboardChartsAndRecents();
-            } catch (error) { logError("Erro ao calcular métricas: " + error.message); }
+                renderDashboardChartsAndRecents(activeColecao);
+            } catch (error) { logError("Erro Métricas: " + error.message); }
         }
 
-        function renderDashboardChartsAndRecents() {
-            const bCounts = {}; colecao.forEach(i => bCounts[i.brand] = (bCounts[i.brand] || 0) + 1);
+        function renderDashboardChartsAndRecents(activeColecao) {
+            const bCounts = {}; activeColecao.forEach(i => bCounts[i.brand] = (bCounts[i.brand] || 0) + 1);
             const topB = Object.entries(bCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
             const container = document.getElementById('brand-distribution-container');
             container.innerHTML = topB.length === 0 ? '<p class="text-xs text-slate-500 italic py-4">Insira registros para gerar as métricas.</p>' : '';
             const maxVal = topB.length > 0 ? topB[0][1] : 1;
             topB.forEach(([b, c]) => {
-                const pct = Math.round((c/colecao.length)*100);
+                const pct = Math.round((c/activeColecao.length)*100);
                 const wPct = Math.max(10, Math.round((c/maxVal)*100));
                 container.innerHTML += `<div class="space-y-1"><div class="flex justify-between text-xs font-semibold"><span>${b}</span><span class="text-brandGreen">${c} un (${pct}%)</span></div><div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-darkBorder"><div class="bg-gradient-to-r from-brandGreen to-brandCyan h-full" style="width: ${wPct}%"></div></div></div>`;
             });
 
-            const sCounts = {}; colecao.forEach(i => sCounts[i.scale] = (sCounts[i.scale] || 0) + 1);
+            const sCounts = {}; activeColecao.forEach(i => sCounts[i.scale] = (sCounts[i.scale] || 0) + 1);
             const sContainer = document.getElementById('scale-distribution-container'); sContainer.innerHTML = '';
             Object.entries(sCounts).sort((a,b)=>b[1]-a[1]).forEach(([s, c]) => {
-                const pct = Math.round((c/colecao.length)*100);
+                const pct = Math.round((c/activeColecao.length)*100);
                 sContainer.innerHTML += `<div class="flex items-center gap-4 text-xs"><div class="w-12 text-slate-400 font-bold text-right">${s}</div><div class="flex-grow bg-slate-950 h-2 rounded-full border border-darkBorder overflow-hidden"><div class="bg-brandCyan h-full" style="width:${pct}%"></div></div><div class="w-12 text-right font-semibold">${pct}%</div></div>`;
             });
 
             const rContainer = document.getElementById('recent-items-container'); rContainer.innerHTML = '';
-            const recents = [...colecao].sort((a,b) => b.lastUpdated - a.lastUpdated).slice(0, 5);
+            const recents = [...activeColecao].sort((a,b) => b.lastUpdated - a.lastUpdated).slice(0, 5);
             if(recents.length === 0) rContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full text-center">Nenhum veículo adicionado recentemente.</p>';
             recents.forEach(item => {
                 const p = item.photos[0] || 'https://placehold.co/150x150/0F1524/10B981?text=Sem+Foto';
@@ -772,7 +786,7 @@
             });
         }
 
-        // ESCUDO ANTI-CRASH APLICADO NO FILTRO PARA EVITAR A TELA BRANCA DA MORTE
+        // ESCUDO ANTI-CRASH DO INVENTÁRIO (Sempre filtra nulos e exclui tombstones)
         function applyFilters() {
             try {
                 const q = document.getElementById('filter-search').value.toLowerCase();
@@ -782,6 +796,8 @@
                 const status = document.getElementById('filter-set-status').value;
 
                 currentFilteredItems = colecao.filter(i => {
+                    if(i.deleted) return false; 
+
                     const mdl = (i.model || '').toString().toLowerCase();
                     const brnd = (i.brand || '').toString().toLowerCase();
                     const ser = (i.series || '').toString().toLowerCase();
@@ -794,7 +810,8 @@
                            (!status || i.setStatus === status);
                 });
 
-                document.getElementById('inventory-counter').textContent = `Exibindo ${currentFilteredItems.length} de ${colecao.length} carrinhos`;
+                const activeColecaoLength = colecao.filter(i => !i.deleted).length;
+                document.getElementById('inventory-counter').textContent = `Exibindo ${currentFilteredItems.length} de ${activeColecaoLength} carrinhos`;
                 
                 if(viewMode === 'grid') {
                     document.getElementById('inventory-grid').classList.remove('hidden');
@@ -805,9 +822,7 @@
                     document.getElementById('inventory-table-container').classList.remove('hidden');
                     renderTable(currentFilteredItems);
                 }
-            } catch (error) {
-                logError("Erro Fatal na Renderização do Inventário: " + error.message);
-            }
+            } catch (error) { logError("Crash no Inventário evitado: " + error.message); }
         }
 
         function renderGrid(items) {
@@ -894,10 +909,51 @@
             document.getElementById('lightbox-img').src = currentActivePhotos[currentLightboxIndex];
         }
 
+        // ------------------ DELEÇÃO E REORDENAÇÃO COMPLETA DE NÚMEROS (NUMERADOR E DENOMINADOR) ------------------
         function deleteItem(id) {
             if (confirm('Deletar permanentemente da garagem?')) {
-                const tx = db.transaction(['colecao'], 'readwrite'); tx.objectStore('colecao').delete(id);
-                tx.oncomplete = async () => { await loadCollection(); renderAll(); closeModal(); await pushToCloud(); };
+                const item = colecao.find(i => i.id === id);
+                if(item) {
+                    item.deleted = true; 
+                    item.lastUpdated = Date.now();
+                    
+                    const tx = db.transaction(['colecao'], 'readwrite');
+                    tx.objectStore('colecao').put(item);
+                    
+                    tx.oncomplete = async () => { 
+                        // REORDENAÇÃO APENAS PARA SÉRIES DINÂMICAS NA EXCLUSÃO (1/9, 2/9, 3/9...)
+                        if (item.series && isDynamicSeries(item.series)) {
+                            const activeInSeries = colecao.filter(i => i.series === item.series && !i.deleted);
+                            const newTotal = activeInSeries.length;
+
+                            if (newTotal > 0) {
+                                const tx2 = db.transaction(['colecao'], 'readwrite');
+                                const store2 = tx2.objectStore('colecao');
+                                
+                                // Ordena os restantes pelo número que tinham antes da exclusão
+                                activeInSeries.sort((a, b) => {
+                                    const aN = parseInt((a.seriesNumber || '0').split('/')[0]) || 0;
+                                    const bN = parseInt((b.seriesNumber || '0').split('/')[0]) || 0;
+                                    return aN - bN;
+                                });
+                                
+                                // Remarca tudo sequencialmente sem deixar buracos no numerador ou denominador
+                                activeInSeries.forEach((activeItem, idx) => {
+                                    activeItem.seriesNumber = `${idx + 1}/${newTotal}`;
+                                    activeItem.lastUpdated = Date.now();
+                                    store2.put(activeItem);
+                                });
+                                await new Promise(r => tx2.oncomplete = r);
+                            }
+                        }
+
+                        await loadCollection(); 
+                        await reevaluateAllSeriesStatus();
+                        renderAll(); 
+                        closeModal(); 
+                        await pushToCloud(); 
+                    };
+                }
             }
         }
 
@@ -929,7 +985,7 @@
         }
 
         function compressImage(file) {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 const reader = new FileReader(); reader.readAsDataURL(file);
                 reader.onload = (e) => {
                     const img = new Image(); img.src = e.target.result;
@@ -941,20 +997,23 @@
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         resolve(canvas.toDataURL('image/jpeg', 0.7));
                     };
+                    img.onerror = () => reject("Erro ao ler imagem");
                 };
             });
         }
 
         async function previewImage(e, idx) {
-            const f = e.target.files[0];
-            if (f) {
-                const b64 = await compressImage(f); imagesBase64[idx] = b64;
-                document.getElementById('preview-img'+idx).src = b64;
-                document.getElementById('preview-img'+idx).classList.remove('hidden');
-                document.getElementById('preview-placeholder'+idx).classList.add('hidden');
-                document.getElementById('btn-clear'+idx).classList.remove('hidden');
-                triggerAutoSave(); 
-            }
+            try {
+                const f = e.target.files[0];
+                if (f) {
+                    const b64 = await compressImage(f); imagesBase64[idx] = b64;
+                    document.getElementById('preview-img'+idx).src = b64;
+                    document.getElementById('preview-img'+idx).classList.remove('hidden');
+                    document.getElementById('preview-placeholder'+idx).classList.add('hidden');
+                    document.getElementById('btn-clear'+idx).classList.remove('hidden');
+                    triggerAutoSave(); 
+                }
+            } catch (error) { logError("Falha na Imagem: " + error); }
         }
 
         function clearImage(idx) {
@@ -969,7 +1028,8 @@
             const sku = document.getElementById('form-sku').value.trim();
             const id = document.getElementById('edit-id').value;
             if(!sku) { document.getElementById('sku-warning').classList.add('hidden'); return; }
-            const d = colecao.find(i => i.sku && i.sku.toLowerCase() === sku.toLowerCase() && i.id !== id);
+            const activeColecao = colecao.filter(i => !i.deleted);
+            const d = activeColecao.find(i => i.sku && i.sku.toLowerCase() === sku.toLowerCase() && i.id !== id);
             document.getElementById('sku-warning').classList.toggle('hidden', !d);
         }
 
@@ -988,13 +1048,15 @@
         }
 
         function exportDatabaseJSON() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(colecao, null, 2));
+            const activeColecao = colecao.filter(i => !i.deleted);
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeColecao, null, 2));
             const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "garagem_virtual_backup.json"); dl.click();
         }
 
         function exportCollectionCSV() {
             let csv = "data:text/csv;charset=utf-8,\uFEFFID,SKU,Fabricante,Modelo,Escala,Preco Pago\r\n";
-            colecao.forEach(i => { csv += `${i.id},"${i.sku||''}","${i.brand}","${i.model}",${i.scale},${i.price}\r\n`; });
+            const activeColecao = colecao.filter(i => !i.deleted);
+            activeColecao.forEach(i => { csv += `${i.id},"${i.sku||''}","${i.brand}","${i.model}",${i.scale},${i.price}\r\n`; });
             const dl = document.createElement('a'); dl.setAttribute("href", encodeURI(csv)); dl.setAttribute("download", "colecao.csv"); dl.click();
         }
 
@@ -1005,7 +1067,7 @@
             if (CLIENT_ID && API_KEY && navigator.onLine) injectGoogleScripts();
         }
 
-        // SEGURANÇA MÁXIMA DO GOOGLE (Confiança cega no token local para não deslogar com crash da Câmera)
+        // ------------------ GOOGLE DRIVE: MEDIA UPLOAD (A PROVA DE CORRUPÇÃO) ------------------
         function injectGoogleScripts() {
             if (document.getElementById('gapi-script')) return;
             const gapiScript = document.createElement('script'); gapiScript.id = 'gapi-script'; gapiScript.src = "https://apis.google.com/js/api.js";
@@ -1019,13 +1081,10 @@
                         const savedToken = JSON.parse(savedTokenRaw);
                         gapi.client.setToken(savedToken);
                         
-                        isGoogleAuthenticated = true; 
-                        updateCloudUI(true);
+                        isGoogleAuthenticated = true; updateCloudUI(true);
                         
                         pullAndSyncCloud().catch((err) => {
-                            if(err && err.status === 401) {
-                                isGoogleAuthenticated = false; updateCloudUI(false);
-                            }
+                            if(err && err.status === 401) { isGoogleAuthenticated = false; updateCloudUI(false); }
                         });
                     }
                 } catch(e) { logError("Google API Init Error: " + e.message); }
@@ -1036,12 +1095,9 @@
             gisScript.onload = () => { 
                 try { 
                     tokenClient = google.accounts.oauth2.initTokenClient({ 
-                        client_id: CLIENT_ID, 
-                        scope: SCOPES, 
+                        client_id: CLIENT_ID, scope: SCOPES, 
                         callback: async (resp) => {
-                            if (resp.error !== undefined) { 
-                                isGoogleAuthenticated = false; updateCloudUI(false); return; 
-                            }
+                            if (resp.error !== undefined) { isGoogleAuthenticated = false; updateCloudUI(false); return; }
                             localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
                             isGoogleAuthenticated = true; updateCloudUI(true); 
                             await pullAndSyncCloud(); 
@@ -1092,7 +1148,7 @@
                 if (!fileId) { isSyncing = false; await pushToCloud(); return; }
                 
                 const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
-                const cloudCollection = res.result || [];
+                const cloudCollection = res.result;
                 
                 if (Array.isArray(cloudCollection)) {
                     let mapColecao = new Map(colecao.map(item => [item.id, item]));
@@ -1114,9 +1170,9 @@
                         const tx = db.transaction(['colecao'], 'readwrite');
                         tx.onerror = (err) => logError("Sync DB Error: " + err.target.error);
                         
-                        const objStore = tx.objectStore('colecao');
-                        await objStore.clear();
-                        for (const item of novaColecao) objStore.put(item);
+                        const storeObj = tx.objectStore('colecao');
+                        await storeObj.clear();
+                        for (const item of novaColecao) storeObj.put(item);
                         
                         tx.oncomplete = async () => {
                             await loadCollection();
@@ -1124,12 +1180,12 @@
                             renderAll();
                         };
                     }
+                } else {
+                    logError("Arquivo da Nuvem corrompido ou vazio bloqueado. Dados locais preservados.");
                 }
             } catch (e) { 
-                logError("Falha na sincronização Download: " + (e.message || "Token Expirado"));
-                if (e.status === 401) {
-                    isGoogleAuthenticated = false; updateCloudUI(false);
-                }
+                if (e.status === 401) { isGoogleAuthenticated = false; updateCloudUI(false); }
+                else { logError("Erro Download Nuvem: " + e.message); }
             }
             isSyncing = false;
             if(isGoogleAuthenticated) await pushToCloud(); 
@@ -1138,10 +1194,31 @@
         async function pushToCloud() {
             if (!isGoogleAuthenticated || !navigator.onLine) return;
             try {
-                const fileId = await getDriveFileId(); const boundary = 'foo_bar_baz'; const delimiter = "\r\n--" + boundary + "\r\n"; const close_delimiter = "\r\n--" + boundary + "--";
-                const metadata = { 'name': 'garagem_virtual_backup.json', 'parents': ['appDataFolder'] }; const data = JSON.stringify(colecao);
-                let multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + data + close_delimiter;
-                await gapi.client.request({ 'path': '/upload/drive/v3/files' + (fileId ? '/' + fileId : ''), 'method': fileId ? 'PATCH' : 'POST', 'params': {'uploadType': 'multipart'}, 'headers': {'Content-Type': 'multipart/related; boundary="' + boundary + '"'}, 'body': multipartRequestBody });
+                const fileId = await getDriveFileId(); 
+                const data = JSON.stringify(colecao);
+                
+                if (fileId) {
+                    await gapi.client.request({
+                        path: '/upload/drive/v3/files/' + fileId,
+                        method: 'PATCH',
+                        params: { uploadType: 'media' },
+                        body: data
+                    });
+                } else {
+                    const boundary = '-------314159265358979323846';
+                    const delimiter = "\r\n--" + boundary + "\r\n";
+                    const close_delim = "\r\n--" + boundary + "--";
+                    const metadata = { 'name': 'garagem_virtual_backup.json', 'parents': ['appDataFolder'] };
+                    const multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + data + close_delim;
+                    
+                    await gapi.client.request({
+                        path: '/upload/drive/v3/files',
+                        method: 'POST',
+                        params: { uploadType: 'multipart' },
+                        headers: { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' },
+                        body: multipartRequestBody
+                    });
+                }
                 document.getElementById('gdrive-sync-time').textContent = `Último backup: Hoje às ${new Date().toLocaleTimeString('pt-BR')}`;
                 updateCloudUI(true);
             } catch (e) {
@@ -1150,7 +1227,7 @@
             }
         }
 
-        async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados locais espelhados e salvos no Drive."); }
+        async function forceSyncUpload() { if(!navigator.onLine) return; await pushToCloud(); alert("Dados locais espelhados e salvos no Drive com sucesso."); }
         async function forceSyncDownload() { if(!navigator.onLine) return; await pullAndSyncCloud(); alert("Sincronização forçada concluída com sucesso!"); }
 
         function renderAll() { calculateMetrics(); applyFilters(); }
