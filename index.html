@@ -409,12 +409,17 @@
         // ------------------ SISTEMA DE LOGS DE ERRO (CAIXA-PRETA) ------------------
         let errorLogs = JSON.parse(localStorage.getItem('gv_error_logs') || '[]');
         function logError(msg) {
-            const err = `[${new Date().toLocaleString()}] ${msg}`;
-            errorLogs.unshift(err);
-            if(errorLogs.length > 30) errorLogs.pop();
-            localStorage.setItem('gv_error_logs', JSON.stringify(errorLogs));
-            console.error(err);
+            try {
+                const err = `[${new Date().toLocaleString()}] ${msg}`;
+                errorLogs.unshift(err);
+                if(errorLogs.length > 30) errorLogs.pop();
+                localStorage.setItem('gv_error_logs', JSON.stringify(errorLogs));
+                console.error(err);
+            } catch (e) {
+                console.error("Critical log failure:", e, msg);
+            }
         }
+        
         window.onerror = function(msg, url, line) { logError(`Crash Crítico: ${msg} | Linha: ${line}`); return false; };
         window.onunhandledrejection = function(e) { logError(`Promise Rejeitada: ${e.reason}`); };
         
@@ -442,8 +447,9 @@
         let viewMode = 'grid'; let imagesBase64 = {1: '', 2: '', 3: ''};
         let currentActivePhotos = []; let currentLightboxIndex = 0;
         let isSyncing = false; let gapiReady = false; let gisReady = false;
+        let isResettingForm = false;
 
-        // VERIFICADOR DE SÉRIES DINÂMICAS (PALAVRAS-CHAVE PERMITIDAS)
+        // VERIFICADOR DE SÉRIES DINÂMICAS
         function isDynamicSeries(seriesName) {
             if (!seriesName) return false;
             const name = seriesName.toLowerCase();
@@ -472,11 +478,32 @@
             });
         }
 
+        function garbageCollectTombstones() {
+            const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            const tx = db.transaction(['colecao'], 'readwrite');
+            const store = tx.objectStore('colecao');
+            let hasDeletions = false;
+
+            colecao.forEach(item => {
+                if (item.deleted && item.lastUpdated && (now - item.lastUpdated > THIRTY_DAYS)) {
+                    store.delete(item.id);
+                    hasDeletions = true;
+                }
+            });
+
+            if (hasDeletions) {
+                tx.oncomplete = async () => { await loadCollection(); };
+            }
+        }
+
         async function loadAppData() {
             try {
                 await initDB();
                 await loadCustomLists();
                 await loadCollection();
+                garbageCollectTombstones(); // Limpa lixeira invisível > 30 dias
+                
                 populateBrandSelects();
                 populateScaleSelects();
                 
@@ -491,7 +518,7 @@
         }
 
         function triggerAutoSave() {
-            if (document.getElementById('edit-id').value) return; 
+            if (isResettingForm || document.getElementById('edit-id').value) return; 
             try {
                 const draft = {
                     sku: document.getElementById('form-sku').value,
@@ -508,39 +535,70 @@
                     photos: [imagesBase64[1], imagesBase64[2], imagesBase64[3]]
                 };
                 localStorage.setItem('gv_cadastro_draft', JSON.stringify(draft));
-            } catch (e) { logError("Falha Auto-Save: " + e.message); }
+            } catch (e) { 
+                if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                    logError("Rascunho muito grande. Salvando apenas textos para proteger o sistema.");
+                    try {
+                        const textDraft = {
+                            sku: document.getElementById('form-sku').value,
+                            brand: document.getElementById('form-brand').value,
+                            model: document.getElementById('form-model').value,
+                            series: document.getElementById('form-series').value,
+                            seriesNumber: document.getElementById('form-series-number').value,
+                            year: document.getElementById('form-year').value,
+                            scale: document.getElementById('form-scale').value,
+                            price: document.getElementById('form-price').value,
+                            date: document.getElementById('form-date').value,
+                            condition: document.getElementById('form-condition').value,
+                            notes: document.getElementById('form-notes').value,
+                            photos: ['', '', ''] 
+                        };
+                        localStorage.setItem('gv_cadastro_draft', JSON.stringify(textDraft));
+                    } catch (e2) {
+                        logError("Falha crítica no Fallback do Auto-Save: " + e2.message);
+                    }
+                } else {
+                    logError("Falha Auto-Save: " + e.message); 
+                }
+            }
         }
 
         function checkRestoreDraft() {
             const raw = localStorage.getItem('gv_cadastro_draft');
             if (raw) {
-                const draft = JSON.parse(raw);
-                if (!draft.model && !draft.brand && !draft.series && !draft.photos[0] && !draft.photos[1] && !draft.photos[2]) return false;
-                
-                document.getElementById('form-sku').value = draft.sku || '';
-                document.getElementById('form-brand').value = draft.brand || '';
-                document.getElementById('form-model').value = draft.model || '';
-                document.getElementById('form-series').value = draft.series || '';
-                document.getElementById('form-series-number').value = draft.seriesNumber || '';
-                document.getElementById('form-year').value = draft.year || '';
-                document.getElementById('form-scale').value = draft.scale || '';
-                document.getElementById('form-price').value = draft.price || '';
-                document.getElementById('form-date').value = draft.date || '';
-                document.getElementById('form-condition').value = draft.condition || 'Na cartela';
-                document.getElementById('form-notes').value = draft.notes || ''; 
-                
-                draft.photos.forEach((p, idx) => {
-                    const i = idx + 1;
-                    if(p) {
-                        imagesBase64[i] = p;
-                        document.getElementById('preview-img'+i).src = p;
-                        document.getElementById('preview-img'+i).classList.remove('hidden');
-                        document.getElementById('preview-placeholder'+i).classList.add('hidden');
-                        document.getElementById('btn-clear'+i).classList.remove('hidden');
-                    }
-                });
-                switchTab('cadastro');
-                return true;
+                try {
+                    const draft = JSON.parse(raw);
+                    if (!draft.model && !draft.brand && !draft.series && !draft.photos[0] && !draft.photos[1] && !draft.photos[2]) return false;
+                    
+                    document.getElementById('form-sku').value = draft.sku || '';
+                    document.getElementById('form-brand').value = draft.brand || '';
+                    document.getElementById('form-model').value = draft.model || '';
+                    document.getElementById('form-series').value = draft.series || '';
+                    document.getElementById('form-series-number').value = draft.seriesNumber || '';
+                    document.getElementById('form-year').value = draft.year || '';
+                    document.getElementById('form-scale').value = draft.scale || '';
+                    document.getElementById('form-price').value = draft.price || '';
+                    document.getElementById('form-date').value = draft.date || '';
+                    document.getElementById('form-condition').value = draft.condition || 'Na cartela';
+                    document.getElementById('form-notes').value = draft.notes || ''; 
+                    
+                    draft.photos.forEach((p, idx) => {
+                        const i = idx + 1;
+                        if(p) {
+                            imagesBase64[i] = p;
+                            document.getElementById('preview-img'+i).src = p;
+                            document.getElementById('preview-img'+i).classList.remove('hidden');
+                            document.getElementById('preview-placeholder'+i).classList.add('hidden');
+                            document.getElementById('btn-clear'+i).classList.remove('hidden');
+                        }
+                    });
+                    switchTab('cadastro');
+                    return true;
+                } catch (e) {
+                    logError("Rascunho corrompido. Limpando dados locais.");
+                    clearDraft();
+                    return false;
+                }
             }
             return false;
         }
@@ -992,7 +1050,8 @@
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
                         let w = img.width, h = img.height;
-                        if (w > h) { if (w > 400) { h *= 400/w; w = 400; } } else { if (h > 400) { w *= 400/h; h = 400; } }
+                        // Qualidade da imagem ampliada para 800px para permitir Zoom sem granular
+                        if (w > h) { if (w > 800) { h *= 800/w; w = 800; } } else { if (h > 800) { w *= 800/h; h = 800; } }
                         canvas.width = w; canvas.height = h;
                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
                         resolve(canvas.toDataURL('image/jpeg', 0.7));
@@ -1033,7 +1092,15 @@
             document.getElementById('sku-warning').classList.toggle('hidden', !d);
         }
 
-        function resetForm() { document.getElementById('car-form').reset(); document.getElementById('edit-id').value = ''; clearImage(1); clearImage(2); clearImage(3); document.getElementById('form-title').textContent = 'Registrar Nova Miniatura'; }
+        function resetForm() { 
+            isResettingForm = true; // Bloqueia o Auto-Save Vazio
+            document.getElementById('car-form').reset(); 
+            document.getElementById('edit-id').value = ''; 
+            clearImage(1); clearImage(2); clearImage(3); 
+            document.getElementById('form-title').textContent = 'Registrar Nova Miniatura'; 
+            isResettingForm = false;
+        }
+        
         function closeModal() { document.getElementById('details-modal').className = "hidden"; }
         
         function switchTab(tabId) {
