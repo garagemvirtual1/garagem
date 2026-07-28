@@ -260,7 +260,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura</label>
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (WebP Otimizado)</label>
                         <div class="grid grid-cols-3 gap-4">
                             <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
                                 <input type="file" id="file-photo1" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
@@ -324,9 +324,34 @@
 
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Segurança Manual Local</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button id="btn-export-json" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-export"></i> Salvar Cópia .JSON</button>
-                    <button id="btn-export-csv" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2"><i class="fa-solid fa-file-csv"></i> Exportar Excel (.CSV)</button>
+                <p class="text-xs text-slate-400">Exporte ou restaure sua garagem offline.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-download text-brandCyan"></i> Importar Backup</h4>
+                            <p class="text-xs text-slate-500 mt-1">Restaura a garagem (Apenas .JSON)</p>
+                        </div>
+                        <input type="file" id="file-import-json" accept=".json" class="hidden">
+                        <button onclick="document.getElementById('file-import-json').click()" class="px-6 py-2.5 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-bold text-xs hover:bg-brandCyan/20 transition whitespace-nowrap">
+                            Selecionar Arquivo .JSON
+                        </button>
+                    </div>
+
+                    <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-upload text-brandGreen"></i> Exportar Garagem</h4>
+                            <p class="text-xs text-slate-500 mt-1">Escolha o formato do seu download</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btn-export-csv" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder text-slate-300 font-bold text-xs hover:text-white transition whitespace-nowrap">
+                                Excel (.CSV)
+                            </button>
+                            <button id="btn-export-json" class="px-4 py-2.5 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-bold text-xs hover:bg-brandGreen/20 transition whitespace-nowrap">
+                                Cópia Completa (.JSON)
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1242,7 +1267,7 @@
                 appUI.closeModal('new-scale-modal'); appUI.triggerAutoSave(); appUI.applyFilters();
             });
 
-            // Fotos (Upload e Clear)
+            // Fotos: Câmera -> WEBP
             [1,2,3].forEach(idx => {
                 document.getElementById(`file-photo${idx}`).addEventListener('change', async (e) => {
                     try {
@@ -1258,7 +1283,8 @@
                                         if (w > h) { if (w > 800) { h *= 800/w; w = 800; } } else { if (h > 800) { w *= 800/h; h = 800; } }
                                         canvas.width = w; canvas.height = h;
                                         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                                        // Compressão WebP nativa implementada
+                                        resolve(canvas.toDataURL('image/webp', 0.7));
                                     };
                                     img.onerror = () => reject("Erro ao ler imagem");
                                 };
@@ -1275,7 +1301,7 @@
                 document.getElementById(`btn-clear${idx}`).addEventListener('click', () => appUI.clearImage(idx));
             });
 
-            // Configurações, Nuvem e Exportação
+            // Configurações, Nuvem e Exportação / Importação
             document.getElementById('cfg-client-id').addEventListener('change', () => appCloud.saveCloudKeys());
             document.getElementById('cfg-api-key').addEventListener('change', () => appCloud.saveCloudKeys());
             document.getElementById('btn-google-auth').addEventListener('click', () => appCloud.handleAuthClick());
@@ -1286,6 +1312,34 @@
             document.getElementById('btn-force-download').addEventListener('click', async () => {
                 if(!navigator.onLine) return; await appCloud.pullAndSyncCloud(); alert("Sincronização forçada concluída!");
             });
+            
+            // IMPORTAR BACKUP JSON
+            document.getElementById('file-import-json').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const importedData = JSON.parse(ev.target.result);
+                        if (!Array.isArray(importedData)) throw new Error("O arquivo importado não contém uma garagem válida.");
+                        
+                        if (confirm(`Atenção! Isso substituirá a garagem atual por ${importedData.length} registros importados. Deseja continuar?`)) {
+                            await DB.clearAndBulkAdd('colecao', importedData);
+                            appState.colecao = await DB.getAll('colecao');
+                            await appLogic.reevaluateAllSeriesStatus();
+                            appUI.renderAll();
+                            alert("Backup importado e restaurado com sucesso!");
+                            appCloud.pushToCloud(); 
+                        }
+                    } catch (err) {
+                        appLogger.log("Erro na Importação: " + err.message);
+                        alert("Erro ao importar. Certifique-se de que selecionou o arquivo .JSON correto da Garagem Virtual.");
+                    }
+                    e.target.value = ''; // Limpa o input para permitir importar o mesmo arquivo novamente se necessário
+                };
+                reader.readAsText(file);
+            });
+
             document.getElementById('btn-export-json').addEventListener('click', () => {
                 const activeColecao = appState.colecao.filter(i => !i.deleted);
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeColecao, null, 2));
