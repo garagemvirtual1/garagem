@@ -219,7 +219,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label for="form-series-number" class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série (Ex: 1/5)</label>
+                            <label for="form-series-number" class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série</label>
                             <input type="text" id="form-series-number" placeholder="Ex: 1/5" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                         <div>
@@ -415,7 +415,6 @@
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Gerenciar Marcas</h3>
             
-            <!-- Lista Unificada de Marcas -->
             <div class="bg-slate-950 border border-darkBorder rounded-xl p-2 max-h-48 overflow-y-auto">
                 <ul id="custom-brands-list" class="space-y-1 text-sm text-slate-300"></ul>
             </div>
@@ -436,7 +435,6 @@
         <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
             <h3 class="font-display font-bold text-lg text-slate-100">Gerenciar Escalas</h3>
             
-            <!-- Lista Unificada de Escalas -->
             <div class="bg-slate-950 border border-darkBorder rounded-xl p-2 max-h-48 overflow-y-auto">
                 <ul id="custom-scales-list" class="space-y-1 text-sm text-slate-300"></ul>
             </div>
@@ -569,19 +567,20 @@
                     
                     if (CLIENT_ID && API_KEY && navigator.onLine) appCloud.injectGoogleScripts();
                     appUI.renderAll();
+                    
+                    if ('serviceWorker' in navigator) {
+                        navigator.serviceWorker.register('/garagem/sw.js').catch(err => appLogger.log("SW Registro Falhou: " + err));
+                    }
                 } catch (e) { appLogger.log("Erro no init: " + e.message); }
             },
             async loadLists() {
-                // Insere as marcas padrão se for o primeiro uso. O usuário é livre para apagá-las.
-                if (!localStorage.getItem('gv_defaults_seeded')) {
+                if (!localStorage.getItem('gv_defaults_seeded_v2')) {
                     const dMarcas = ['Auto World', 'Greenlight', 'Hot Wheels', 'Jada Toys', 'M2 Machines', 'Maisto', 'Majorette', 'Matchbox', 'Mini GT'];
                     const dEscalas = ['1:18', '1:32', '1:43', '1:64', 'Outra'];
-                    
                     for (let m of dMarcas) await DB.put('marcas_custom', {nome: m});
                     for (let e of dEscalas) await DB.put('escalas_custom', {nome: e});
-                    localStorage.setItem('gv_defaults_seeded', 'true');
+                    localStorage.setItem('gv_defaults_seeded_v2', 'true');
                 }
-
                 const dbMarcas = await DB.getAll('marcas_custom');
                 const dbEscalas = await DB.getAll('escalas_custom');
                 appState.customMarcas = dbMarcas.map(m => m.nome).sort();
@@ -685,6 +684,11 @@
                     appState.colecao = await DB.getAll('colecao');
                     await this.reevaluateAllSeriesStatus();
                     appUI.resetForm(); 
+                    
+                    await appLogic.loadLists();
+                    appUI.renderCustomLists();
+                    appUI.populateSelects();
+
                     appUI.switchTab('inventario'); 
                     appUI.showToast("Miniatura salva com sucesso!", "success");
                     await appCloud.pushToCloud();
@@ -724,6 +728,7 @@
                     appState.colecao = await DB.getAll('colecao');
                     await this.reevaluateAllSeriesStatus();
                     appUI.renderAll(); 
+                    appUI.renderCustomLists();
                     appUI.closeModal('details-modal'); 
                     appUI.showToast("Registro deletado com sucesso.", "success");
                     await appCloud.pushToCloud(); 
@@ -863,15 +868,23 @@
                 document.getElementById('form-scale').innerHTML = ''; document.getElementById('form-scale').appendChild(fragScaleForm);
             },
             renderCustomLists() {
+                const activeItems = appState.colecao.filter(i => !i.deleted);
+                const inUseBrands = new Set(activeItems.map(i => i.brand));
+                const inUseScales = new Set(activeItems.map(i => i.scale));
+
                 const bList = document.getElementById('custom-brands-list');
                 bList.innerHTML = '';
                 if(appState.customMarcas.length === 0) {
                     bList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma marca customizada.</li>';
                 } else {
                     appState.customMarcas.forEach(m => {
+                        const isInUse = inUseBrands.has(m);
                         const li = document.createElement('li');
                         li.className = "flex justify-between items-center py-1 border-b border-darkBorder/50 last:border-0";
-                        li.innerHTML = `<span>${m}</span> <button aria-label="Excluir marca" onclick="appLogic.deleteCustomBrand('${m}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>`;
+                        let btnHtml = isInUse 
+                            ? `<span class="text-slate-600 text-xs px-2" title="Em uso. Não pode ser excluída."><i class="fa-solid fa-lock"></i></span>`
+                            : `<button aria-label="Excluir marca" onclick="appLogic.deleteCustomBrand('${m}')" class="text-red-400 hover:text-red-300 p-1 transition"><i class="fa-solid fa-trash"></i></button>`;
+                        li.innerHTML = `<span>${m}</span> ${btnHtml}`;
                         bList.appendChild(li);
                     });
                 }
@@ -882,9 +895,13 @@
                     sList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma escala customizada.</li>';
                 } else {
                     appState.customEscalas.forEach(s => {
+                        const isInUse = inUseScales.has(s);
                         const li = document.createElement('li');
                         li.className = "flex justify-between items-center py-1 border-b border-darkBorder/50 last:border-0";
-                        li.innerHTML = `<span>${s}</span> <button aria-label="Excluir escala" onclick="appLogic.deleteCustomScale('${s}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>`;
+                        let btnHtml = isInUse 
+                            ? `<span class="text-slate-600 text-xs px-2" title="Em uso. Não pode ser excluída."><i class="fa-solid fa-lock"></i></span>`
+                            : `<button aria-label="Excluir escala" onclick="appLogic.deleteCustomScale('${s}')" class="text-red-400 hover:text-red-300 p-1 transition"><i class="fa-solid fa-trash"></i></button>`;
+                        li.innerHTML = `<span>${s}</span> ${btnHtml}`;
                         sList.appendChild(li);
                     });
                 }
@@ -1423,6 +1440,11 @@
                             appState.colecao = await DB.getAll('colecao');
                             await appLogic.reevaluateAllSeriesStatus();
                             appUI.renderAll();
+                            
+                            await appLogic.loadLists();
+                            appUI.renderCustomLists();
+                            appUI.populateSelects();
+
                             appUI.showToast("Backup restaurado com sucesso!", "success");
                             appCloud.pushToCloud(); 
                         }
