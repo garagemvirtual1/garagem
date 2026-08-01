@@ -260,4 +260,1212 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da
+                        <label class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-2">Fotos da Miniatura (WebP Otimizado)</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" aria-label="Adicionar Foto Frente" id="file-photo1" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img1" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder1" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Frente</span></div>
+                                <button type="button" aria-label="Remover Foto Frente" id="btn-clear1" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" aria-label="Adicionar Foto Traseira" id="file-photo2" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img2" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder2" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Traseira</span></div>
+                                <button type="button" aria-label="Remover Foto Traseira" id="btn-clear2" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                            <div class="relative bg-slate-950 border border-dashed border-darkBorder rounded-2xl h-32 flex flex-col items-center justify-center cursor-pointer overflow-hidden">
+                                <input type="file" aria-label="Adicionar Foto Chassi" id="file-photo3" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                                <img id="preview-img3" class="absolute inset-0 w-full h-full object-cover hidden">
+                                <div id="preview-placeholder3" class="text-center"><i class="fa-solid fa-camera text-xl text-slate-500 mb-1"></i><span class="block text-[10px] text-slate-400 font-semibold">Chassi</span></div>
+                                <button type="button" aria-label="Remover Foto Chassi" id="btn-clear3" class="absolute top-1.5 right-1.5 bg-slate-950/80 rounded-full w-6 h-6 flex items-center justify-center text-xs hidden z-20"><i class="fa-solid fa-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 justify-end pt-4 border-t border-darkBorder">
+                        <button type="button" id="btn-cancel" class="px-6 py-2.5 rounded-xl border border-darkBorder text-sm font-semibold text-slate-300 hover:bg-slate-900 transition">Cancelar</button>
+                        <button type="submit" id="btn-save" class="px-8 py-2.5 rounded-xl bg-gradient-to-tr from-brandGreen to-brandCyan text-darkBg text-sm font-bold shadow-md shadow-brandGreen/20 flex items-center justify-center transition">Salvar Miniatura</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- CONFIGURAÇÕES E LOGS -->
+        <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
+                <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
+                <div class="grid grid-cols-1 gap-3 bg-slate-950 p-4 rounded-xl border border-darkBorder">
+                    <div>
+                        <label for="cfg-client-id" class="block text-xs font-bold text-slate-400 mb-1">Google Client ID</label>
+                        <input type="text" id="cfg-client-id" placeholder="Cole seu Client ID" class="w-full bg-darkCard border border-darkBorder rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brandGreen">
+                    </div>
+                    <div>
+                        <label for="cfg-api-key" class="block text-xs font-bold text-slate-400 mb-1">Google API Key</label>
+                        <input type="password" id="cfg-api-key" placeholder="Cole sua API Key" class="w-full bg-darkCard border border-darkBorder rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brandGreen">
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                        <p class="text-sm font-bold text-slate-200" id="gdrive-user">Status: Desconectado</p>
+                        <p class="text-xs text-slate-500" id="gdrive-sync-time">Último backup: Nunca</p>
+                    </div>
+                    <button id="btn-google-auth" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-google"></i> Conectar Google Drive
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <button id="btn-force-upload" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-brandGreen/20"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio para Nuvem</button>
+                    <button id="btn-force-download" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-brandCyan/20"><i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem</button>
+                </div>
+            </div>
+
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
+                <h2 class="font-display font-bold text-xl">Segurança Manual Local</h2>
+                <p class="text-xs text-slate-400">Exporte ou restaure sua garagem offline.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-download text-brandCyan"></i> Importar Backup</h4>
+                            <p class="text-xs text-slate-500 mt-1">Restaura a garagem (Apenas .JSON)</p>
+                        </div>
+                        <input type="file" aria-label="Selecione arquivo JSON" id="file-import-json" accept=".json" class="hidden">
+                        <button id="btn-import-json-trigger" onclick="document.getElementById('file-import-json').click()" class="px-6 py-2.5 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-bold text-xs hover:bg-brandCyan/20 transition whitespace-nowrap flex items-center justify-center">
+                            Selecionar Arquivo .JSON
+                        </button>
+                    </div>
+
+                    <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-upload text-brandGreen"></i> Exportar Garagem</h4>
+                            <p class="text-xs text-slate-500 mt-1">Escolha o formato do seu download</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="btn-export-csv" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder text-slate-300 font-bold text-xs hover:text-white transition whitespace-nowrap flex items-center justify-center">
+                                Excel (.CSV)
+                            </button>
+                            <button id="btn-export-json" class="px-4 py-2.5 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-bold text-xs hover:bg-brandGreen/20 transition whitespace-nowrap flex items-center justify-center">
+                                Cópia (.JSON)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-darkCard border border-red-500/20 rounded-2xl p-6 space-y-4 shadow-lg shadow-red-500/5">
+                <h2 class="font-display font-bold text-xl text-red-400 flex items-center gap-2"><i class="fa-solid fa-bug"></i> Diagnóstico e Caixa-Preta</h2>
+                <p class="text-xs text-slate-400">Erros e travamentos do sistema serão gravados de forma segura aqui.</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button onclick="appLogger.toggleLogs()" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-slate-300 font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-slate-900"><i class="fa-solid fa-terminal"></i> Ver Registro de Erros</button>
+                    <button onclick="appLogger.log('Teste de Log executado com sucesso!'); appLogger.toggleLogs(true);" class="px-4 py-2.5 rounded-xl bg-slate-950 border border-darkBorder text-brandCyan font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-slate-900"><i class="fa-solid fa-flask"></i> Simular Erro de Teste</button>
+                </div>
+                <div id="log-container" class="hidden mt-2 p-3 bg-slate-950 border border-darkBorder rounded-lg max-h-40 overflow-y-auto text-[10px] text-slate-400 font-mono space-y-1"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL DETALHES -->
+    <div id="details-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-md hidden items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-labelledby="modal-brand-model">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[90vh] shadow-2xl">
+            <div class="flex justify-between items-center p-3 border-b border-darkBorder bg-slate-950/80">
+                <button aria-label="Miniatura Anterior" onclick="appLogic.navigateItem(-1)" class="w-9 h-9 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-brandGreen hover:border-brandGreen flex items-center justify-center transition"><i class="fa-solid fa-chevron-left"></i></button>
+                <div class="text-center px-2 flex-grow overflow-hidden">
+                    <h3 id="modal-brand-model" class="font-display font-bold text-base text-slate-100 truncate"></h3>
+                    <p id="modal-sku" class="text-[10px] text-slate-400 truncate"></p>
+                </div>
+                <div class="flex gap-2">
+                    <button aria-label="Próxima Miniatura" onclick="appLogic.navigateItem(1)" class="w-9 h-9 rounded-lg bg-darkCard border border-darkBorder text-slate-400 hover:text-brandGreen hover:border-brandGreen flex items-center justify-center transition"><i class="fa-solid fa-chevron-right"></i></button>
+                    <button aria-label="Fechar Detalhes" onclick="appUI.closeModal('details-modal')" class="w-9 h-9 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition"><i class="fa-solid fa-x"></i></button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+                <div class="grid grid-cols-3 gap-3" id="modal-photos-grid"></div>
+                <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Fabricante</p><p id="modal-brand" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Série / Lote</p><p id="modal-series" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Nº na Série</p><p id="modal-series-number" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Ano</p><p id="modal-year" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Escala</p><p id="modal-scale" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Preço Pago</p><p id="modal-price" class="font-semibold text-brandGreen"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Estado</p><p id="modal-condition" class="font-semibold text-slate-200"></p></div>
+                    <div><p class="text-[10px] text-slate-500 font-bold uppercase">Data</p><p id="modal-date" class="font-semibold text-slate-200"></p></div>
+                    <div class="col-span-2 bg-slate-950 p-3 rounded-xl border border-darkBorder"><p class="text-[10px] text-slate-500 font-bold uppercase">Notas / Observações</p><p id="modal-notes" class="text-xs text-slate-300 mt-1 whitespace-pre-wrap"></p></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-darkBorder bg-slate-950/40 flex justify-between">
+                <button id="modal-btn-delete" class="px-4 py-2 rounded-lg bg-red-500/15 text-red-500 hover:bg-red-500 hover:text-white font-bold text-xs transition flex items-center justify-center gap-2"><i class="fa-solid fa-trash"></i> Excluir Registro</button>
+                <button id="modal-btn-edit" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg font-bold text-xs shadow-md transition hover:opacity-90 flex items-center justify-center gap-2"><i class="fa-solid fa-pen-to-square"></i> Editar Miniatura</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DO LIGHTBOX -->
+    <div id="lightbox-modal" class="fixed inset-0 bg-black/95 hidden items-center justify-center z-50 p-4 select-none" role="dialog" aria-modal="true" aria-label="Visualizador de Fotos">
+        <button aria-label="Fechar Foto" onclick="appUI.closeModal('lightbox-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur transition"><i class="fa-solid fa-xmark"></i></button>
+        <button aria-label="Foto Anterior" onclick="appLogic.navigateLightbox(-1)" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur transition"><i class="fa-solid fa-chevron-left"></i></button>
+        <img id="lightbox-img" alt="Foto Ampliada" class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl">
+        <button aria-label="Próxima Foto" onclick="appLogic.navigateLightbox(1)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-3xl w-12 h-12 flex items-center justify-center rounded-full bg-slate-900/50 backdrop-blur transition"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+
+    <!-- MODAIS GERENCIADORES (MARCAS E ESCALAS) -->
+    <div id="new-brand-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="Gerenciar Marcas">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="font-display font-bold text-lg text-slate-100">Gerenciar Marcas</h3>
+            
+            <!-- Lista Unificada de Marcas -->
+            <div class="bg-slate-950 border border-darkBorder rounded-xl p-2 max-h-48 overflow-y-auto">
+                <ul id="custom-brands-list" class="space-y-1 text-sm text-slate-300"></ul>
+            </div>
+
+            <div class="pt-2">
+                <p class="text-xs text-slate-400 font-bold uppercase mb-2">Adicionar Nova</p>
+                <input type="text" aria-label="Nome da Marca" id="new-brand-input" placeholder="Ex: Tarmac Works" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandGreen">
+            </div>
+            
+            <div class="flex gap-2 justify-end pt-2">
+                <button onclick="appUI.closeModal('new-brand-modal')" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs hover:bg-slate-900 transition">Fechar</button>
+                <button id="btn-save-brand" class="px-6 py-2 rounded-lg bg-brandGreen text-darkBg text-xs font-bold hover:opacity-90 transition flex items-center justify-center">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-scale-modal" class="fixed inset-0 bg-darkBg/90 backdrop-blur-sm hidden items-center justify-center z-50 p-4" role="dialog" aria-modal="true" aria-label="Gerenciar Escalas">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+            <h3 class="font-display font-bold text-lg text-slate-100">Gerenciar Escalas</h3>
+            
+            <!-- Lista Unificada de Escalas -->
+            <div class="bg-slate-950 border border-darkBorder rounded-xl p-2 max-h-48 overflow-y-auto">
+                <ul id="custom-scales-list" class="space-y-1 text-sm text-slate-300"></ul>
+            </div>
+
+            <div class="pt-2">
+                <p class="text-xs text-slate-400 font-bold uppercase mb-2">Adicionar Nova</p>
+                <input type="text" aria-label="Valor da Escala" id="new-scale-input" placeholder="Ex: 1:24, 1:43" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-slate-200 focus:outline-none focus:border-brandCyan">
+            </div>
+
+            <div class="flex gap-2 justify-end pt-2">
+                <button onclick="appUI.closeModal('new-scale-modal')" class="px-4 py-2 rounded-lg border border-darkBorder text-slate-300 text-xs hover:bg-slate-900 transition">Fechar</button>
+                <button id="btn-save-scale" class="px-6 py-2 rounded-lg bg-brandCyan text-darkBg text-xs font-bold hover:opacity-90 transition flex items-center justify-center">Adicionar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-container" class="fixed bottom-4 right-4 z-[60] flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const appLogger = {
+            logs: [],
+            init() {
+                try {
+                    const saved = localStorage.getItem('gv_error_logs');
+                    this.logs = saved ? JSON.parse(saved) : [];
+                } catch(e) { this.logs = []; }
+                window.onerror = (msg, url, line) => { this.log(`Crash [${line}]: ${msg}`); return false; };
+                window.onunhandledrejection = (e) => { this.log(`Promise Rejeitada: ${e.reason}`); };
+            },
+            log(msg) {
+                try {
+                    const err = `[${new Date().toLocaleTimeString()}] ${msg.substring(0,250)}`;
+                    this.logs.unshift(err);
+                    if (this.logs.length > 30) this.logs.pop();
+                    localStorage.setItem('gv_error_logs', JSON.stringify(this.logs));
+                    console.error(err);
+                } catch(e) { console.error("Logger falhou", e); }
+            },
+            toggleLogs(forceShow = false) {
+                const c = document.getElementById('log-container');
+                if (forceShow) c.classList.remove('hidden');
+                else c.classList.toggle('hidden');
+                if (this.logs.length === 0) c.innerHTML = 'Nenhum erro interno registrado.';
+                else c.innerHTML = this.logs.map(e => `<div class="border-b border-darkBorder pb-1 mb-1">${e}</div>`).join('');
+            }
+        };
+
+        const DB = {
+            dbName: 'GaragemVirtualDB_V5',
+            version: 1,
+            instance: null,
+            async connect() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(this.dbName, this.version);
+                    request.onerror = (e) => { appLogger.log("DB Error: " + e.target.error); reject(e.target.error); };
+                    request.onsuccess = (e) => { this.instance = e.target.result; resolve(this.instance); };
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('colecao')) db.createObjectStore('colecao', { keyPath: 'id' });
+                        if (!db.objectStoreNames.contains('marcas_custom')) db.createObjectStore('marcas_custom', { keyPath: 'nome' });
+                        if (!db.objectStoreNames.contains('escalas_custom')) db.createObjectStore('escalas_custom', { keyPath: 'nome' });
+                    };
+                });
+            },
+            async getAll(storeName) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.instance.transaction(storeName, 'readonly');
+                    const request = tx.objectStore(storeName).getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+            },
+            async put(storeName, item) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.instance.transaction(storeName, 'readwrite');
+                    tx.objectStore(storeName).put(item);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            },
+            async delete(storeName, id) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.instance.transaction(storeName, 'readwrite');
+                    tx.objectStore(storeName).delete(id);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            },
+            async clearAndBulkAdd(storeName, items) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.instance.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    store.clear();
+                    items.forEach(item => store.put(item));
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            }
+        };
+
+        let CLIENT_ID = localStorage.getItem('cfg_client_id') || ''; 
+        let API_KEY = localStorage.getItem('cfg_api_key') || '';
+        const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
+        const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
+
+        let tokenClient = null; let isGoogleAuthenticated = false; let isSyncing = false; let gapiReady = false; let gisReady = false;
+
+        const appState = {
+            colecao: [], customMarcas: [], customEscalas: [], viewMode: 'grid',
+            imagesBase64: {1: '', 2: '', 3: ''}, isResettingForm: false, currentFilteredItems: [],
+            currentItemIndex: 0, currentActivePhotos: [], currentLightboxIndex: 0,
+        };
+
+        const appLogic = {
+            async init() {
+                try {
+                    await DB.connect();
+                    await this.loadLists();
+                    appState.colecao = await DB.getAll('colecao') || [];
+                    await this.garbageCollectTombstones();
+                    
+                    appUI.populateSelects();
+                    appUI.renderCustomLists();
+                    
+                    const hasDraft = appUI.checkRestoreDraft();
+                    if (!hasDraft) appUI.switchTab('dashboard');
+
+                    document.getElementById('cfg-client-id').value = CLIENT_ID;
+                    document.getElementById('cfg-api-key').value = API_KEY;
+                    
+                    if (CLIENT_ID && API_KEY && navigator.onLine) appCloud.injectGoogleScripts();
+                    appUI.renderAll();
+                } catch (e) { appLogger.log("Erro no init: " + e.message); }
+            },
+            async loadLists() {
+                // Insere as marcas padrão se for o primeiro uso. O usuário é livre para apagá-las.
+                if (!localStorage.getItem('gv_defaults_seeded')) {
+                    const dMarcas = ['Auto World', 'Greenlight', 'Hot Wheels', 'Jada Toys', 'M2 Machines', 'Maisto', 'Majorette', 'Matchbox', 'Mini GT'];
+                    const dEscalas = ['1:18', '1:32', '1:43', '1:64', 'Outra'];
+                    
+                    for (let m of dMarcas) await DB.put('marcas_custom', {nome: m});
+                    for (let e of dEscalas) await DB.put('escalas_custom', {nome: e});
+                    localStorage.setItem('gv_defaults_seeded', 'true');
+                }
+
+                const dbMarcas = await DB.getAll('marcas_custom');
+                const dbEscalas = await DB.getAll('escalas_custom');
+                appState.customMarcas = dbMarcas.map(m => m.nome).sort();
+                appState.customEscalas = dbEscalas.map(e => e.nome).sort();
+            },
+            async garbageCollectTombstones() {
+                const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+                const now = Date.now();
+                let hasDeletions = false;
+                for (const item of appState.colecao) {
+                    if (item.deleted && item.lastUpdated && (now - item.lastUpdated > THIRTY_DAYS)) {
+                        await DB.delete('colecao', item.id);
+                        hasDeletions = true;
+                    }
+                }
+                if (hasDeletions) appState.colecao = await DB.getAll('colecao');
+            },
+            isDynamicSeries(seriesName) {
+                if (!seriesName) return false;
+                const name = seriesName.toLowerCase();
+                const keywords = ['avulso', 'avulsos', 'sem serie', 'sem série', 'diversos', 'variados', 'aleatorio', 'aleatorios', 'aleatório', 'aleatórios', 'misto', 'mistos', 'estragado', 'estragados', 'sucata', 'desmanche', 'para restauro', 'restaurar', 'repetido', 'repetidos', 'duplicado', 'duplicados', 'duplicata', 'doacao', 'doações', 'doação', 'presente', 'presentes'];
+                return keywords.some(kw => name.includes(kw));
+            },
+            getSeriesStatus(seriesName) {
+                if(!seriesName) return 'Completo';
+                const itemsInSeries = appState.colecao.filter(i => i.series && i.series.toLowerCase() === seriesName.toLowerCase() && !i.deleted);
+                if(itemsInSeries.length === 0) return 'Em progresso';
+                let totalExpected = 0; let registeredNumbers = new Set();
+                itemsInSeries.forEach(i => {
+                    if(i.seriesNumber && i.seriesNumber.includes('/')) {
+                        const parts = i.seriesNumber.split('/');
+                        const current = parseInt(parts[0].trim());
+                        const total = parseInt(parts[1].trim());
+                        if(!isNaN(total)) totalExpected = total;
+                        if(!isNaN(current)) registeredNumbers.add(current);
+                    }
+                });
+                return (totalExpected > 0 && registeredNumbers.size >= totalExpected) ? 'Completo' : 'Em progresso';
+            },
+            async reevaluateAllSeriesStatus() {
+                try {
+                    for (const item of appState.colecao) {
+                        if (!item.deleted) {
+                            item.setStatus = this.getSeriesStatus(item.series);
+                            await DB.put('colecao', item);
+                        }
+                    }
+                    appState.colecao = await DB.getAll('colecao');
+                    appUI.calculateMetrics();
+                } catch (e) { appLogger.log("Falha ao reavaliar series: " + e.message); }
+            },
+            checkAutocompleteSeries() {
+                const seriesName = document.getElementById('form-series').value.trim().toLowerCase();
+                if(!seriesName) return;
+                const activeColecao = appState.colecao.filter(i => !i.deleted);
+                const match = activeColecao.find(i => i.series && i.series.toLowerCase() === seriesName);
+                if(match) {
+                    if(!document.getElementById('form-brand').value) document.getElementById('form-brand').value = match.brand;
+                    if(!document.getElementById('form-scale').value) document.getElementById('form-scale').value = match.scale;
+                    appUI.triggerAutoSave();
+                }
+            },
+            async saveMiniature(e) {
+                e.preventDefault();
+                appUI.setLoading('btn-save', true);
+                try {
+                    const eid = document.getElementById('edit-id').value;
+                    const seriesInput = document.getElementById('form-series').value.trim();
+                    const seriesNumInput = document.getElementById('form-series-number').value.trim();
+                    
+                    const item = {
+                        id: eid || 'car-' + Date.now(),
+                        sku: document.getElementById('form-sku').value.trim(), brand: document.getElementById('form-brand').value,
+                        model: document.getElementById('form-model').value.trim(), series: seriesInput,
+                        seriesNumber: seriesNumInput, year: document.getElementById('form-year').value,
+                        scale: document.getElementById('form-scale').value, condition: document.getElementById('form-condition').value,
+                        price: parseFloat(document.getElementById('form-price').value) || 0, date: document.getElementById('form-date').value || new Date().toISOString().split('T')[0],
+                        notes: document.getElementById('form-notes').value.trim(), photos: [appState.imagesBase64[1], appState.imagesBase64[2], appState.imagesBase64[3]],
+                        lastUpdated: Date.now(), deleted: false
+                    };
+
+                    if (seriesInput && this.isDynamicSeries(seriesInput)) {
+                        const activeInSeries = appState.colecao.filter(i => i.series === seriesInput && i.id !== item.id && !i.deleted);
+                        const newTotal = activeInSeries.length + 1;
+                        activeInSeries.sort((a, b) => {
+                            const aN = parseInt((a.seriesNumber || '0').split('/')[0]) || 0;
+                            const bN = parseInt((b.seriesNumber || '0').split('/')[0]) || 0;
+                            return aN - bN;
+                        });
+                        for (let idx = 0; idx < activeInSeries.length; idx++) {
+                            const existingItem = activeInSeries[idx];
+                            existingItem.seriesNumber = `${idx + 1}/${newTotal}`;
+                            existingItem.lastUpdated = Date.now();
+                            await DB.put('colecao', existingItem);
+                        }
+                        item.seriesNumber = `${newTotal}/${newTotal}`;
+                    }
+
+                    await DB.put('colecao', item);
+                    appUI.clearDraft(); 
+                    appState.colecao = await DB.getAll('colecao');
+                    await this.reevaluateAllSeriesStatus();
+                    appUI.resetForm(); 
+                    appUI.switchTab('inventario'); 
+                    appUI.showToast("Miniatura salva com sucesso!", "success");
+                    await appCloud.pushToCloud();
+                } catch (error) { 
+                    appLogger.log("Erro ao salvar: " + error.message); 
+                    appUI.showToast("Erro técnico ao salvar. Rascunho mantido seguro.", "error"); 
+                } finally {
+                    appUI.setLoading('btn-save', false);
+                }
+            },
+            async deleteItem(id) {
+                if (!confirm('Deletar permanentemente da garagem?')) return;
+                appUI.setLoading('modal-btn-delete', true);
+                try {
+                    const item = appState.colecao.find(i => i.id === id);
+                    if (!item) return;
+                    item.deleted = true; item.lastUpdated = Date.now();
+                    await DB.put('colecao', item);
+
+                    if (item.series && this.isDynamicSeries(item.series)) {
+                        const activeInSeries = appState.colecao.filter(i => i.series === item.series && !i.deleted);
+                        const newTotal = activeInSeries.length;
+                        if (newTotal > 0) {
+                            activeInSeries.sort((a, b) => {
+                                const aN = parseInt((a.seriesNumber || '0').split('/')[0]) || 0;
+                                const bN = parseInt((b.seriesNumber || '0').split('/')[0]) || 0;
+                                return aN - bN;
+                            });
+                            for (let idx = 0; idx < activeInSeries.length; idx++) {
+                                const activeItem = activeInSeries[idx];
+                                activeItem.seriesNumber = `${idx + 1}/${newTotal}`;
+                                activeItem.lastUpdated = Date.now();
+                                await DB.put('colecao', activeItem);
+                            }
+                        }
+                    }
+                    appState.colecao = await DB.getAll('colecao');
+                    await this.reevaluateAllSeriesStatus();
+                    appUI.renderAll(); 
+                    appUI.closeModal('details-modal'); 
+                    appUI.showToast("Registro deletado com sucesso.", "success");
+                    await appCloud.pushToCloud(); 
+                } catch (e) { 
+                    appLogger.log("Erro Deletar: " + e.message); 
+                    appUI.showToast("Falha ao deletar registro.", "error");
+                } finally {
+                    appUI.setLoading('modal-btn-delete', false);
+                }
+            },
+            navigateItem(direction) {
+                if(appState.currentFilteredItems.length <= 1) return;
+                appState.currentItemIndex += direction;
+                if(appState.currentItemIndex >= appState.currentFilteredItems.length) appState.currentItemIndex = 0;
+                if(appState.currentItemIndex < 0) appState.currentItemIndex = appState.currentFilteredItems.length - 1;
+                appUI.showDetails(appState.currentFilteredItems[appState.currentItemIndex].id);
+            },
+            navigateLightbox(direction) {
+                if(appState.currentActivePhotos.length <= 1) return;
+                appState.currentLightboxIndex += direction;
+                if(appState.currentLightboxIndex >= appState.currentActivePhotos.length) appState.currentLightboxIndex = 0;
+                if(appState.currentLightboxIndex < 0) appState.currentLightboxIndex = appState.currentActivePhotos.length - 1;
+                document.getElementById('lightbox-img').src = appState.currentActivePhotos[appState.currentLightboxIndex];
+            },
+            async deleteCustomBrand(name) {
+                if(!confirm(`Remover a marca "${name}" da lista?`)) return;
+                await DB.delete('marcas_custom', name);
+                await this.loadLists();
+                appUI.renderCustomLists();
+                appUI.populateSelects();
+                appUI.showToast("Marca removida.");
+            },
+            async deleteCustomScale(name) {
+                if(!confirm(`Remover a escala "${name}" da lista?`)) return;
+                await DB.delete('escalas_custom', name);
+                await this.loadLists();
+                appUI.renderCustomLists();
+                appUI.populateSelects();
+                appUI.showToast("Escala removida.");
+            }
+        };
+
+        const appUI = {
+            showToast(msg, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                const bgColor = type === 'success' ? 'bg-brandGreen text-darkBg' : 'bg-red-500 text-white';
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-triangle-exclamation';
+                
+                toast.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg transform transition-all duration-300 translate-y-10 opacity-0 ${bgColor} font-semibold text-sm`;
+                toast.innerHTML = `<i class="fa-solid ${icon}"></i> ${msg}`;
+                
+                container.appendChild(toast);
+                requestAnimationFrame(() => toast.classList.remove('translate-y-10', 'opacity-0'));
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3000);
+            },
+            setLoading(btnId, isLoading, originalHtml = '') {
+                const btn = document.getElementById(btnId);
+                if (!btn) return;
+                if (isLoading) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-75', 'cursor-not-allowed');
+                    if (!btn.dataset.original) btn.dataset.original = btn.innerHTML;
+                    btn.innerHTML = `<i class="fa-solid fa-spinner spinner"></i> Processando...`;
+                } else {
+                    btn.disabled = false;
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                    btn.innerHTML = originalHtml || btn.dataset.original;
+                }
+            },
+            switchTab(tabId) {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById('tab-' + tabId).classList.remove('hidden');
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap";
+                });
+                document.getElementById('btn-' + tabId).className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md whitespace-nowrap";
+                if (tabId === 'dashboard') this.calculateMetrics();
+                else if (tabId === 'inventario') this.applyFilters();
+            },
+            toggleViewMode(mode) {
+                appState.viewMode = mode;
+                const gridBtn = document.getElementById('btn-view-grid');
+                const tableBtn = document.getElementById('btn-view-table');
+                if(mode === 'grid') {
+                    gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-darkBg";
+                    tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                } else {
+                    tableBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-brandGreen text-darkBg";
+                    gridBtn.className = "px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-400 hover:text-slate-200";
+                }
+                this.applyFilters();
+            },
+            openModal(modalId) {
+                const el = document.getElementById(modalId);
+                el.classList.remove('hidden');
+                if(modalId.includes('new-')) el.classList.add('flex');
+            },
+            closeModal(modalId) {
+                const el = document.getElementById(modalId);
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+                if (modalId === 'new-brand-modal') document.getElementById('new-brand-input').value = '';
+                if (modalId === 'new-scale-modal') document.getElementById('new-scale-input').value = '';
+            },
+            populateSelects() {
+                const fragBrandFilter = document.createDocumentFragment();
+                const fragBrandForm = document.createDocumentFragment();
+                const opt1 = document.createElement('option'); opt1.value = ""; opt1.textContent = "Todas Marcas";
+                const opt2 = document.createElement('option'); opt2.value = ""; opt2.textContent = "Selecione...";
+                fragBrandFilter.appendChild(opt1); fragBrandForm.appendChild(opt2);
+
+                appState.customMarcas.forEach(m => {
+                    const op = document.createElement('option'); op.value = m; op.textContent = m;
+                    fragBrandFilter.appendChild(op.cloneNode(true));
+                    fragBrandForm.appendChild(op);
+                });
+                document.getElementById('filter-brand').innerHTML = ''; document.getElementById('filter-brand').appendChild(fragBrandFilter);
+                document.getElementById('form-brand').innerHTML = ''; document.getElementById('form-brand').appendChild(fragBrandForm);
+
+                const fragScaleFilter = document.createDocumentFragment();
+                const fragScaleForm = document.createDocumentFragment();
+                const optS1 = document.createElement('option'); optS1.value = ""; optS1.textContent = "Todas Escalas";
+                const optS2 = document.createElement('option'); optS2.value = ""; optS2.textContent = "Selecione...";
+                fragScaleFilter.appendChild(optS1); fragScaleForm.appendChild(optS2);
+
+                appState.customEscalas.forEach(s => {
+                    const op = document.createElement('option'); op.value = s; op.textContent = s;
+                    fragScaleFilter.appendChild(op.cloneNode(true));
+                    fragScaleForm.appendChild(op);
+                });
+                document.getElementById('filter-scale').innerHTML = ''; document.getElementById('filter-scale').appendChild(fragScaleFilter);
+                document.getElementById('form-scale').innerHTML = ''; document.getElementById('form-scale').appendChild(fragScaleForm);
+            },
+            renderCustomLists() {
+                const bList = document.getElementById('custom-brands-list');
+                bList.innerHTML = '';
+                if(appState.customMarcas.length === 0) {
+                    bList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma marca customizada.</li>';
+                } else {
+                    appState.customMarcas.forEach(m => {
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between items-center py-1 border-b border-darkBorder/50 last:border-0";
+                        li.innerHTML = `<span>${m}</span> <button aria-label="Excluir marca" onclick="appLogic.deleteCustomBrand('${m}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>`;
+                        bList.appendChild(li);
+                    });
+                }
+                
+                const sList = document.getElementById('custom-scales-list');
+                sList.innerHTML = '';
+                if(appState.customEscalas.length === 0) {
+                    sList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma escala customizada.</li>';
+                } else {
+                    appState.customEscalas.forEach(s => {
+                        const li = document.createElement('li');
+                        li.className = "flex justify-between items-center py-1 border-b border-darkBorder/50 last:border-0";
+                        li.innerHTML = `<span>${s}</span> <button aria-label="Excluir escala" onclick="appLogic.deleteCustomScale('${s}')" class="text-red-400 hover:text-red-300 p-1"><i class="fa-solid fa-trash"></i></button>`;
+                        sList.appendChild(li);
+                    });
+                }
+            },
+            renderAll() {
+                this.calculateMetrics();
+                this.applyFilters();
+            },
+            applyFilters() {
+                try {
+                    const q = document.getElementById('filter-search').value.toLowerCase();
+                    const brand = document.getElementById('filter-brand').value;
+                    const scale = document.getElementById('filter-scale').value;
+                    const cond = document.getElementById('filter-condition').value;
+                    const status = document.getElementById('filter-set-status').value;
+
+                    appState.currentFilteredItems = appState.colecao.filter(i => {
+                        if(i.deleted) return false; 
+                        const mdl = (i.model || '').toString().toLowerCase();
+                        const brnd = (i.brand || '').toString().toLowerCase();
+                        const ser = (i.series || '').toString().toLowerCase();
+                        const sk = (i.sku || '').toString().toLowerCase();
+                        return (mdl.includes(q) || brnd.includes(q) || ser.includes(q) || sk.includes(q)) &&
+                               (!brand || i.brand === brand) && (!scale || i.scale === scale) && 
+                               (!cond || i.condition === cond) && (!status || i.setStatus === status);
+                    });
+
+                    const activeLen = appState.colecao.filter(i => !i.deleted).length;
+                    document.getElementById('inventory-counter').textContent = `Exibindo ${appState.currentFilteredItems.length} de ${activeLen} carrinhos`;
+                    
+                    if(appState.viewMode === 'grid') {
+                        document.getElementById('inventory-grid').classList.remove('hidden');
+                        document.getElementById('inventory-table-container').classList.add('hidden');
+                        this.renderGrid(appState.currentFilteredItems);
+                    } else {
+                        document.getElementById('inventory-grid').classList.add('hidden');
+                        document.getElementById('inventory-table-container').classList.remove('hidden');
+                        this.renderTable(appState.currentFilteredItems);
+                    }
+                } catch (e) { appLogger.log("Erro Filtros: " + e.message); }
+            },
+            renderGrid(items) {
+                const c = document.getElementById('inventory-grid'); 
+                c.innerHTML = '';
+                if (items.length === 0) { 
+                    c.innerHTML = '<div class="col-span-full text-center py-8 text-slate-500 italic text-sm">Nenhum item corresponde à filtragem.</div>'; return; 
+                }
+                const fragment = document.createDocumentFragment();
+                items.forEach(i => {
+                    const p = i.photos[0] || 'https://placehold.co/300x200/0F1524/10B981?text=Sem+Foto';
+                    const div = document.createElement('div');
+                    div.className = "bg-darkCard border border-darkBorder rounded-2xl p-3 flex flex-col justify-between hover:border-brandGreen cursor-pointer transition";
+                    div.onclick = () => this.showDetails(i.id);
+                    div.innerHTML = `<div class="relative"><img src="${p}" loading="lazy" class="w-full aspect-video object-cover rounded-xl mb-2">${i.sku ? `<span class="absolute top-1 left-1 bg-slate-950/80 px-1.5 py-0.5 rounded text-[8px] font-mono">${i.sku}</span>` : ''}<span class="absolute bottom-1 right-1 bg-brandCyan/20 text-brandCyan text-[8px] px-1.5 rounded font-bold">${i.scale}</span></div><span class="text-[9px] text-brandGreen font-bold">${i.brand}</span><h4 class="font-bold text-sm truncate text-slate-100">${i.model}</h4><p class="text-xs text-slate-400 truncate">${i.series || 'Avulso'} ${i.seriesNumber ? `(${i.seriesNumber})` : ''}</p><div class="flex justify-between items-center mt-2 pt-2 border-t border-darkBorder"><span class="text-xs text-slate-400">${i.condition}</span><span class="text-sm font-bold text-brandGreen">R$ ${(i.price || 0).toFixed(2)}</span></div>`;
+                    fragment.appendChild(div);
+                });
+                c.appendChild(fragment);
+            },
+            renderTable(items) {
+                const tbody = document.getElementById('inventory-table-body'); 
+                tbody.innerHTML = '';
+                if (items.length === 0) { 
+                    tbody.innerHTML = '<tr><td colspan="8" class="p-4 text-center text-slate-500 italic">Nenhum registro localizado.</td></tr>'; return; 
+                }
+                const fragment = document.createDocumentFragment();
+                items.forEach(i => {
+                    const p = i.photos[0] || 'https://placehold.co/60x40/0F1524/10B981?text=X';
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-900/40 transition cursor-pointer";
+                    tr.onclick = () => this.showDetails(i.id);
+                    tr.innerHTML = `<td class="p-3"><img src="${p}" loading="lazy" class="w-12 aspect-video object-cover rounded border border-darkBorder"></td><td class="p-3 text-xs font-bold text-brandGreen uppercase">${i.brand}</td><td class="p-3 font-semibold text-slate-200">${i.model}</td><td class="p-3 text-slate-400 text-xs">${i.series || '-'} ${i.seriesNumber ? `(${i.seriesNumber})` : ''}</td><td class="p-3"><span class="bg-brandCyan/10 text-brandCyan px-2 py-0.5 rounded text-[10px] font-bold">${i.scale}</span></td><td class="p-3 font-bold text-brandGreen">R$ ${(i.price || 0).toFixed(2)}</td><td class="p-3 text-xs text-slate-400">${i.condition}</td><td class="p-3"><button aria-label="Ver detalhes" class="bg-darkBorder hover:bg-brandGreen hover:text-darkBg px-2 py-1 rounded text-xs transition">Ver</button></td>`;
+                    fragment.appendChild(tr);
+                });
+                tbody.appendChild(fragment);
+            },
+            calculateMetrics() {
+                try {
+                    const activeColecao = appState.colecao.filter(i => !i.deleted);
+                    document.getElementById('stat-total-items').textContent = activeColecao.length;
+                    const invest = activeColecao.reduce((a, c) => a + (Number(c.price) || 0), 0);
+                    document.getElementById('stat-total-investment').textContent = 'R$ ' + invest.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                    document.getElementById('stat-total-brands').textContent = new Set(activeColecao.map(i => i.brand)).size;
+                    
+                    const seriesMap = new Map();
+                    activeColecao.forEach(i => {
+                        if (i.series && i.series.trim() !== '') {
+                            if (!seriesMap.has(i.series)) { seriesMap.set(i.series, i.setStatus); } 
+                            else if (i.setStatus === 'Em progresso') { seriesMap.set(i.series, 'Em progresso'); }
+                        }
+                    });
+                    let completas = 0;
+                    seriesMap.forEach(status => { if (status === 'Completo') completas++; });
+                    document.getElementById('stat-set-progress').textContent = completas + '/' + seriesMap.size;
+                    
+                    this.renderDashboardChartsAndRecents(activeColecao);
+                } catch (e) { appLogger.log("Erro Métricas: " + e.message); }
+            },
+            renderDashboardChartsAndRecents(activeColecao) {
+                const bCounts = {}; activeColecao.forEach(i => bCounts[i.brand] = (bCounts[i.brand] || 0) + 1);
+                const topB = Object.entries(bCounts).sort((a,b)=>b[1]-a[1]).slice(0,5);
+                const container = document.getElementById('brand-distribution-container');
+                container.innerHTML = topB.length === 0 ? '<p class="text-xs text-slate-500 italic py-4">Insira registros para gerar as métricas.</p>' : '';
+                const maxVal = topB.length > 0 ? topB[0][1] : 1;
+                
+                const fragB = document.createDocumentFragment();
+                topB.forEach(([b, c]) => {
+                    const pct = Math.round((c/activeColecao.length)*100);
+                    const wPct = Math.max(10, Math.round((c/maxVal)*100));
+                    const d = document.createElement('div'); d.className = "space-y-1";
+                    d.innerHTML = `<div class="flex justify-between text-xs font-semibold"><span>${b}</span><span class="text-brandGreen">${c} un (${pct}%)</span></div><div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-darkBorder"><div class="bg-gradient-to-r from-brandGreen to-brandCyan h-full" style="width: ${wPct}%"></div></div>`;
+                    fragB.appendChild(d);
+                });
+                container.appendChild(fragB);
+
+                const sCounts = {}; activeColecao.forEach(i => sCounts[i.scale] = (sCounts[i.scale] || 0) + 1);
+                const sContainer = document.getElementById('scale-distribution-container'); sContainer.innerHTML = '';
+                const fragS = document.createDocumentFragment();
+                Object.entries(sCounts).sort((a,b)=>b[1]-a[1]).forEach(([s, c]) => {
+                    const pct = Math.round((c/activeColecao.length)*100);
+                    const d = document.createElement('div'); d.className = "flex items-center gap-4 text-xs mb-2";
+                    d.innerHTML = `<div class="w-12 text-slate-400 font-bold text-right">${s}</div><div class="flex-grow bg-slate-950 h-2 rounded-full border border-darkBorder overflow-hidden"><div class="bg-brandCyan h-full" style="width:${pct}%"></div></div><div class="w-20 text-right font-semibold whitespace-nowrap">${c} un (${pct}%)</div>`;
+                    fragS.appendChild(d);
+                });
+                sContainer.appendChild(fragS);
+
+                const rContainer = document.getElementById('recent-items-container'); rContainer.innerHTML = '';
+                const recents = [...activeColecao].sort((a,b) => b.lastUpdated - a.lastUpdated).slice(0, 5);
+                if(recents.length === 0) { rContainer.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full text-center">Nenhum veículo adicionado recentemente.</p>'; }
+                else {
+                    const fragR = document.createDocumentFragment();
+                    recents.forEach(item => {
+                        const p = item.photos[0] || 'https://placehold.co/150x150/0F1524/10B981?text=Sem+Foto';
+                        const d = document.createElement('div');
+                        d.className = "bg-slate-950 border border-darkBorder rounded-xl p-2.5 cursor-pointer hover:border-brandGreen flex flex-col justify-between group";
+                        d.onclick = () => this.showDetails(item.id);
+                        d.innerHTML = `<img src="${p}" loading="lazy" class="w-full aspect-video object-cover rounded-lg mb-2 group-hover:scale-105 transition"><div class="truncate"><span class="text-[9px] text-brandGreen font-bold tracking-wider uppercase">${item.brand}</span><h4 class="text-xs font-bold truncate text-slate-200">${item.model}</h4></div>`;
+                        fragR.appendChild(d);
+                    });
+                    rContainer.appendChild(fragR);
+                }
+            },
+            showDetails(id) {
+                appState.currentItemIndex = appState.currentFilteredItems.findIndex(i => i.id === id);
+                const item = appState.currentFilteredItems[appState.currentItemIndex];
+                if (!item) return;
+
+                document.getElementById('modal-brand-model').textContent = item.model;
+                document.getElementById('modal-sku').textContent = item.sku ? `SKU: ${item.sku}` : 'Sem SKU';
+                document.getElementById('modal-brand').textContent = item.brand;
+                document.getElementById('modal-series').textContent = item.series || '-';
+                document.getElementById('modal-series-number').textContent = item.seriesNumber || '-';
+                document.getElementById('modal-year').textContent = item.year || '-';
+                document.getElementById('modal-scale').textContent = item.scale;
+                document.getElementById('modal-price').textContent = `R$ ${(item.price || 0).toFixed(2)}`;
+                document.getElementById('modal-condition').textContent = item.condition;
+                document.getElementById('modal-date').textContent = item.date;
+                document.getElementById('modal-notes').textContent = item.notes || 'Sem observações.';
+                
+                appState.currentActivePhotos = item.photos.filter(p => p !== '');
+                const grid = document.getElementById('modal-photos-grid'); grid.innerHTML = '';
+                if(appState.currentActivePhotos.length === 0) {
+                    grid.innerHTML = '<p class="text-xs text-slate-500 italic py-2 col-span-full">Nenhuma foto registrada.</p>';
+                } else {
+                    const fragP = document.createDocumentFragment();
+                    item.photos.forEach((p, index) => {
+                        if (p) {
+                            const activeIdx = appState.currentActivePhotos.indexOf(p);
+                            const d = document.createElement('div');
+                            d.className = "aspect-square rounded-xl overflow-hidden border border-darkBorder cursor-zoom-in hover:border-brandGreen transition";
+                            d.onclick = () => {
+                                appState.currentLightboxIndex = activeIdx;
+                                document.getElementById('lightbox-img').src = appState.currentActivePhotos[appState.currentLightboxIndex];
+                                this.openModal('lightbox-modal');
+                            };
+                            d.innerHTML = `<img src="${p}" loading="lazy" class="w-full h-full object-cover">`;
+                            fragP.appendChild(d);
+                        }
+                    });
+                    grid.appendChild(fragP);
+                }
+                
+                document.getElementById('modal-btn-delete').onclick = (e) => { e.stopPropagation(); appLogic.deleteItem(item.id); };
+                document.getElementById('modal-btn-edit').onclick = (e) => { e.stopPropagation(); this.editItem(item); };
+                this.openModal('details-modal');
+            },
+            editItem(item) {
+                this.closeModal('details-modal');
+                this.switchTab('cadastro');
+                document.getElementById('form-title').textContent = 'Editar Miniatura';
+                document.getElementById('edit-id').value = item.id;
+                document.getElementById('form-sku').value = item.sku || '';
+                document.getElementById('form-brand').value = item.brand;
+                document.getElementById('form-model').value = item.model;
+                document.getElementById('form-series').value = item.series || '';
+                document.getElementById('form-series-number').value = item.seriesNumber || '';
+                document.getElementById('form-year').value = item.year || '';
+                document.getElementById('form-scale').value = item.scale;
+                document.getElementById('form-condition').value = item.condition;
+                document.getElementById('form-price').value = item.price || '';
+                document.getElementById('form-date').value = item.date || '';
+                document.getElementById('form-notes').value = item.notes || '';
+                
+                item.photos.forEach((p, idx) => {
+                    const index = idx + 1;
+                    if (p) {
+                        appState.imagesBase64[index] = p;
+                        document.getElementById('preview-img' + index).src = p;
+                        document.getElementById('preview-img' + index).classList.remove('hidden');
+                        document.getElementById('preview-placeholder' + index).classList.add('hidden');
+                        document.getElementById('btn-clear' + index).classList.remove('hidden');
+                    } else { this.clearImage(index); }
+                });
+            },
+            clearImage(idx) {
+                appState.imagesBase64[idx] = ''; 
+                document.getElementById('file-photo'+idx).value = '';
+                document.getElementById('preview-img'+idx).classList.add('hidden');
+                document.getElementById('preview-placeholder'+idx).classList.remove('hidden');
+                document.getElementById('btn-clear'+idx).classList.add('hidden');
+                this.triggerAutoSave();
+            },
+            triggerAutoSave() {
+                if (appState.isResettingForm || document.getElementById('edit-id').value) return; 
+                try {
+                    const draft = {
+                        sku: document.getElementById('form-sku').value, brand: document.getElementById('form-brand').value,
+                        model: document.getElementById('form-model').value, series: document.getElementById('form-series').value,
+                        seriesNumber: document.getElementById('form-series-number').value, year: document.getElementById('form-year').value,
+                        scale: document.getElementById('form-scale').value, price: document.getElementById('form-price').value,
+                        date: document.getElementById('form-date').value, condition: document.getElementById('form-condition').value,
+                        notes: document.getElementById('form-notes').value, photos: [appState.imagesBase64[1], appState.imagesBase64[2], appState.imagesBase64[3]]
+                    };
+                    localStorage.setItem('gv_cadastro_draft', JSON.stringify(draft));
+                } catch (e) { 
+                    if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED') {
+                        appLogger.log("Rascunho muito grande. Salvando apenas textos.");
+                        try {
+                            const textDraft = {
+                                sku: document.getElementById('form-sku').value, brand: document.getElementById('form-brand').value,
+                                model: document.getElementById('form-model').value, series: document.getElementById('form-series').value,
+                                seriesNumber: document.getElementById('form-series-number').value, year: document.getElementById('form-year').value,
+                                scale: document.getElementById('form-scale').value, price: document.getElementById('form-price').value,
+                                date: document.getElementById('form-date').value, condition: document.getElementById('form-condition').value,
+                                notes: document.getElementById('form-notes').value, photos: ['', '', ''] 
+                            };
+                            localStorage.setItem('gv_cadastro_draft', JSON.stringify(textDraft));
+                        } catch (e2) { appLogger.log("Falha Fallback Auto-Save: " + e2.message); }
+                    } else { appLogger.log("Falha Auto-Save: " + e.message); }
+                }
+            },
+            checkRestoreDraft() {
+                const raw = localStorage.getItem('gv_cadastro_draft');
+                if (raw) {
+                    try {
+                        const draft = JSON.parse(raw);
+                        if (!draft.model && !draft.brand && !draft.series && !draft.photos[0] && !draft.photos[1] && !draft.photos[2]) return false;
+                        
+                        document.getElementById('form-sku').value = draft.sku || ''; document.getElementById('form-brand').value = draft.brand || '';
+                        document.getElementById('form-model').value = draft.model || ''; document.getElementById('form-series').value = draft.series || '';
+                        document.getElementById('form-series-number').value = draft.seriesNumber || ''; document.getElementById('form-year').value = draft.year || '';
+                        document.getElementById('form-scale').value = draft.scale || ''; document.getElementById('form-price').value = draft.price || '';
+                        document.getElementById('form-date').value = draft.date || ''; document.getElementById('form-condition').value = draft.condition || 'Na cartela';
+                        document.getElementById('form-notes').value = draft.notes || ''; 
+                        
+                        draft.photos.forEach((p, idx) => {
+                            const i = idx + 1;
+                            if(p) {
+                                appState.imagesBase64[i] = p;
+                                document.getElementById('preview-img'+i).src = p;
+                                document.getElementById('preview-img'+i).classList.remove('hidden');
+                                document.getElementById('preview-placeholder'+i).classList.add('hidden');
+                                document.getElementById('btn-clear'+i).classList.remove('hidden');
+                            }
+                        });
+                        this.switchTab('cadastro');
+                        appUI.showToast("Rascunho recuperado com sucesso.", "success");
+                        return true;
+                    } catch (e) { appLogger.log("Rascunho corrompido."); this.clearDraft(); return false; }
+                }
+                return false;
+            },
+            resetForm() {
+                appState.isResettingForm = true;
+                document.getElementById('car-form').reset(); 
+                document.getElementById('edit-id').value = ''; 
+                this.clearImage(1); this.clearImage(2); this.clearImage(3); 
+                document.getElementById('form-title').textContent = 'Registrar Nova Miniatura'; 
+                appState.isResettingForm = false;
+            },
+            clearDraft() { localStorage.removeItem('gv_cadastro_draft'); }
+        };
+
+        const appCloud = {
+            async getDriveFileId() {
+                if (!isGoogleAuthenticated) return null;
+                try { 
+                    const response = await gapi.client.drive.files.list({ q: "name='garagem_virtual_backup.json'", spaces: 'appDataFolder', fields: 'files(id)' }); 
+                    return response.result.files.length > 0 ? response.result.files[0].id : null; 
+                } catch (err) { if(err.status === 401) throw err; return null; }
+            },
+            async pushToCloud() {
+                if (!isGoogleAuthenticated || !navigator.onLine) return;
+                try {
+                    const fileId = await this.getDriveFileId(); 
+                    const data = JSON.stringify(appState.colecao);
+                    if (fileId) {
+                        await gapi.client.request({ path: '/upload/drive/v3/files/' + fileId, method: 'PATCH', params: { uploadType: 'media' }, body: data });
+                    } else {
+                        const boundary = '-------314159265358979323846'; const delimiter = "\r\n--" + boundary + "\r\n"; const close_delim = "\r\n--" + boundary + "--";
+                        const metadata = { 'name': 'garagem_virtual_backup.json', 'parents': ['appDataFolder'] };
+                        const multipartRequestBody = delimiter + 'Content-Type: application/json; charset=UTF-8\r\n\r\n' + JSON.stringify(metadata) + delimiter + 'Content-Type: application/json\r\n\r\n' + data + close_delim;
+                        await gapi.client.request({ path: '/upload/drive/v3/files', method: 'POST', params: { uploadType: 'multipart' }, headers: { 'Content-Type': 'multipart/related; boundary="' + boundary + '"' }, body: multipartRequestBody });
+                    }
+                    document.getElementById('gdrive-sync-time').textContent = `Último backup: Hoje às ${new Date().toLocaleTimeString('pt-BR')}`;
+                    this.updateCloudUI(true);
+                } catch (e) {
+                    appLogger.log("Erro Upload Nuvem: " + (e.message || e));
+                    if (e.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
+                }
+            },
+            async pullAndSyncCloud() {
+                if (!isGoogleAuthenticated || !navigator.onLine || isSyncing) return;
+                isSyncing = true;
+                try {
+                    const fileId = await this.getDriveFileId();
+                    if (!fileId) { isSyncing = false; await this.pushToCloud(); return; }
+                    const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
+                    const cloudCollection = res.result;
+                    if (Array.isArray(cloudCollection)) {
+                        let mapColecao = new Map(appState.colecao.map(item => [item.id, item]));
+                        let mudou = false;
+                        cloudCollection.forEach(cItem => {
+                            if (!mapColecao.has(cItem.id)) { mapColecao.set(cItem.id, cItem); mudou = true; } 
+                            else {
+                                const lItem = mapColecao.get(cItem.id);
+                                if ((cItem.lastUpdated || 0) > (lItem.lastUpdated || 0)) { mapColecao.set(cItem.id, cItem); mudou = true; }
+                            }
+                        });
+                        if(mudou) {
+                            const novaColecao = Array.from(mapColecao.values());
+                            await DB.clearAndBulkAdd('colecao', novaColecao);
+                            appState.colecao = novaColecao;
+                            await appLogic.reevaluateAllSeriesStatus();
+                            appUI.renderAll();
+                        }
+                    } else { appLogger.log("Arquivo Nuvem bloqueado por segurança (vazio/corrompido)."); }
+                } catch (e) { 
+                    appLogger.log("Erro Sync Download: " + e.message);
+                    if (e.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
+                }
+                isSyncing = false;
+                if(isGoogleAuthenticated) await this.pushToCloud(); 
+            },
+            saveCloudKeys() {
+                CLIENT_ID = document.getElementById('cfg-client-id').value.trim();
+                API_KEY = document.getElementById('cfg-api-key').value.trim();
+                localStorage.setItem('cfg_client_id', CLIENT_ID);
+                localStorage.setItem('cfg_api_key', API_KEY);
+                if (CLIENT_ID && API_KEY && navigator.onLine) this.injectGoogleScripts();
+            },
+            injectGoogleScripts() {
+                if (document.getElementById('gapi-script')) return;
+                const gapiScript = document.createElement('script'); gapiScript.id = 'gapi-script'; gapiScript.src = "https://apis.google.com/js/api.js";
+                gapiScript.onload = () => gapi.load('client', async () => {
+                    try {
+                        await gapi.client.init({ apiKey: API_KEY, discoveryDocs: [DISCOVERY_DOC] });
+                        gapiReady = true;
+                        const savedTokenRaw = localStorage.getItem('gdrive_token');
+                        if (savedTokenRaw) {
+                            gapi.client.setToken(JSON.parse(savedTokenRaw));
+                            isGoogleAuthenticated = true; this.updateCloudUI(true);
+                            this.pullAndSyncCloud().catch((err) => {
+                                if(err && err.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
+                            });
+                        }
+                    } catch(e) { appLogger.log("Google API Init Error: " + e.message); }
+                });
+                document.head.appendChild(gapiScript);
+
+                const gisScript = document.createElement('script'); gisScript.src = "https://accounts.google.com/gsi/client";
+                gisScript.onload = () => { 
+                    try { 
+                        tokenClient = google.accounts.oauth2.initTokenClient({ 
+                            client_id: CLIENT_ID, scope: SCOPES, 
+                            callback: async (resp) => {
+                                if (resp.error !== undefined) { isGoogleAuthenticated = false; this.updateCloudUI(false); return; }
+                                localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
+                                isGoogleAuthenticated = true; this.updateCloudUI(true); 
+                                appUI.showToast("Google Drive Conectado!", "success");
+                                await this.pullAndSyncCloud(); 
+                            } 
+                        }); 
+                        gisReady = true;
+                    } catch(e) { appLogger.log("GSI Auth Error: " + e.message); } 
+                };
+                document.head.appendChild(gisScript);
+            },
+            updateCloudUI(authenticated) {
+                const indicator = document.getElementById('cloud-status-indicator'); const dot = document.getElementById('status-dot');
+                const text = document.getElementById('status-text'); const btn = document.getElementById('btn-google-auth');
+                const userLabel = document.getElementById('gdrive-user');
+                if (authenticated && isGoogleAuthenticated) {
+                    indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brandGreen/10 border border-brandGreen/20 text-xs text-brandGreen font-medium whitespace-nowrap";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Espelhamento Nuvem Ativo";
+                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectado`; if(userLabel) userLabel.textContent = "Status: Integrado ao Drive";
+                } else {
+                    indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium whitespace-nowrap";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-blue-500"; text.textContent = "Modo Local Ativo";
+                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectar Google Drive`; if(userLabel) userLabel.textContent = "Status: Armazenamento Local Isolado";
+                }
+            },
+            handleAuthClick() {
+                if (!navigator.onLine || !tokenClient) { appUI.showToast("Sincronização indisponível. Verifique rede/chaves.", "error"); return; }
+                tokenClient.requestAccessToken({prompt: 'consent'}); 
+            }
+        };
+
+        function setupEventListeners() {
+            const searchInput = document.getElementById('filter-search');
+            if (searchInput) searchInput.addEventListener('input', () => appUI.applyFilters());
+            ['filter-brand', 'filter-scale', 'filter-condition', 'filter-set-status'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', () => appUI.applyFilters());
+            });
+
+            document.getElementById('btn-view-grid').addEventListener('click', () => appUI.toggleViewMode('grid'));
+            document.getElementById('btn-view-table').addEventListener('click', () => appUI.toggleViewMode('table'));
+
+            document.getElementById('car-form').addEventListener('submit', (e) => appLogic.saveMiniature(e));
+            document.getElementById('car-form').addEventListener('input', () => appUI.triggerAutoSave());
+            
+            document.getElementById('form-sku').addEventListener('blur', () => {
+                const sku = document.getElementById('form-sku').value.trim();
+                const id = document.getElementById('edit-id').value;
+                if(!sku) { document.getElementById('sku-warning').classList.add('hidden'); return; }
+                const d = appState.colecao.filter(i => !i.deleted).find(i => i.sku && i.sku.toLowerCase() === sku.toLowerCase() && i.id !== id);
+                document.getElementById('sku-warning').classList.toggle('hidden', !d);
+            });
+            document.getElementById('form-series').addEventListener('blur', () => appLogic.checkAutocompleteSeries());
+
+            document.getElementById('btn-cancel').addEventListener('click', () => {
+                if(confirm("Deseja limpar o cadastro atual?")) { appUI.clearDraft(); appUI.resetForm(); appUI.switchTab('inventario'); }
+            });
+            
+            document.getElementById('btn-save-brand').addEventListener('click', async () => {
+                appUI.setLoading('btn-save-brand', true);
+                const v = document.getElementById('new-brand-input').value.trim(); if (!v) return appUI.setLoading('btn-save-brand', false);
+                await DB.put('marcas_custom', {nome: v});
+                await appLogic.loadLists();
+                appUI.renderCustomLists();
+                appUI.populateSelects(); 
+                document.getElementById('form-brand').value = v; 
+                document.getElementById('new-brand-input').value = '';
+                appUI.triggerAutoSave();
+                appUI.setLoading('btn-save-brand', false, 'Adicionar');
+                appUI.showToast("Marca adicionada!", "success");
+            });
+
+            document.getElementById('btn-save-scale').addEventListener('click', async () => {
+                appUI.setLoading('btn-save-scale', true);
+                const v = document.getElementById('new-scale-input').value.trim(); if (!v) return appUI.setLoading('btn-save-scale', false);
+                await DB.put('escalas_custom', {nome: v});
+                await appLogic.loadLists();
+                appUI.renderCustomLists();
+                appUI.populateSelects(); 
+                document.getElementById('form-scale').value = v; 
+                document.getElementById('new-scale-input').value = '';
+                appUI.triggerAutoSave(); appUI.applyFilters();
+                appUI.setLoading('btn-save-scale', false, 'Adicionar');
+                appUI.showToast("Escala adicionada!", "success");
+            });
+
+            [1,2,3].forEach(idx => {
+                document.getElementById(`file-photo${idx}`).addEventListener('change', async (e) => {
+                    try {
+                        const f = e.target.files[0];
+                        if (f) {
+                            const b64 = await new Promise((resolve, reject) => {
+                                const reader = new FileReader(); reader.readAsDataURL(f);
+                                reader.onload = (ev) => {
+                                    const img = new Image(); img.src = ev.target.result;
+                                    img.onload = () => {
+                                        const canvas = document.createElement('canvas');
+                                        let w = img.width, h = img.height;
+                                        if (w > h) { if (w > 800) { h *= 800/w; w = 800; } } else { if (h > 800) { w *= 800/h; h = 800; } }
+                                        canvas.width = w; canvas.height = h;
+                                        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                                        resolve(canvas.toDataURL('image/webp', 0.7));
+                                    };
+                                    img.onerror = () => reject("Erro ao ler imagem");
+                                };
+                            });
+                            appState.imagesBase64[idx] = b64;
+                            document.getElementById('preview-img'+idx).src = b64;
+                            document.getElementById('preview-img'+idx).classList.remove('hidden');
+                            document.getElementById('preview-placeholder'+idx).classList.add('hidden');
+                            document.getElementById('btn-clear'+idx).classList.remove('hidden');
+                            appUI.triggerAutoSave(); 
+                        }
+                    } catch (error) { appLogger.log("Falha na Imagem: " + error); appUI.showToast("Falha ao processar foto.", "error"); }
+                });
+                document.getElementById(`btn-clear${idx}`).addEventListener('click', () => appUI.clearImage(idx));
+            });
+
+            document.getElementById('cfg-client-id').addEventListener('change', () => appCloud.saveCloudKeys());
+            document.getElementById('cfg-api-key').addEventListener('change', () => appCloud.saveCloudKeys());
+            document.getElementById('btn-google-auth').addEventListener('click', () => appCloud.handleAuthClick());
+
+            document.getElementById('btn-force-upload').addEventListener('click', async () => {
+                if(!navigator.onLine) return appUI.showToast("Sem conexão com a internet.", "error"); 
+                appUI.setLoading('btn-force-upload', true);
+                await appCloud.pushToCloud(); 
+                appUI.setLoading('btn-force-upload', false, `<i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio para Nuvem`);
+                appUI.showToast("Dados espelhados e salvos no Drive.", "success");
+            });
+            document.getElementById('btn-force-download').addEventListener('click', async () => {
+                if(!navigator.onLine) return appUI.showToast("Sem conexão com a internet.", "error"); 
+                appUI.setLoading('btn-force-download', true);
+                await appCloud.pullAndSyncCloud(); 
+                appUI.setLoading('btn-force-download', false, `<i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem`);
+                appUI.showToast("Sincronização forçada concluída!", "success");
+            });
+            
+            document.getElementById('file-import-json').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                appUI.setLoading('btn-import-json-trigger', true);
+                const reader = new FileReader();
+                reader.onload = async (ev) => {
+                    try {
+                        const importedData = JSON.parse(ev.target.result);
+                        if (!Array.isArray(importedData)) throw new Error("O arquivo importado não contém uma garagem válida.");
+                        
+                        if (confirm(`Atenção! Isso substituirá a garagem atual por ${importedData.length} registros importados. Deseja continuar?`)) {
+                            await DB.clearAndBulkAdd('colecao', importedData);
+                            appState.colecao = await DB.getAll('colecao');
+                            await appLogic.reevaluateAllSeriesStatus();
+                            appUI.renderAll();
+                            appUI.showToast("Backup restaurado com sucesso!", "success");
+                            appCloud.pushToCloud(); 
+                        }
+                    } catch (err) {
+                        appLogger.log("Erro na Importação: " + err.message);
+                        appUI.showToast("Erro ao importar. Arquivo .JSON inválido.", "error");
+                    } finally {
+                        appUI.setLoading('btn-import-json-trigger', false, `Selecionar Arquivo .JSON`);
+                    }
+                    e.target.value = ''; 
+                };
+                reader.readAsText(file);
+            });
+
+            document.getElementById('btn-export-json').addEventListener('click', () => {
+                const activeColecao = appState.colecao.filter(i => !i.deleted);
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(activeColecao, null, 2));
+                const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "garagem_virtual_backup.json"); dl.click();
+                appUI.showToast("Backup JSON exportado com sucesso!", "success");
+            });
+            document.getElementById('btn-export-csv').addEventListener('click', () => {
+                let csv = "data:text/csv;charset=utf-8,\uFEFFID,SKU,Fabricante,Modelo,Escala,Preco Pago\r\n";
+                const activeColecao = appState.colecao.filter(i => !i.deleted);
+                activeColecao.forEach(i => { csv += `${i.id},"${i.sku||''}","${i.brand}","${i.model}",${i.scale},${i.price}\r\n`; });
+                const dl = document.createElement('a'); dl.setAttribute("href", encodeURI(csv)); dl.setAttribute("download", "colecao.csv"); dl.click();
+                appUI.showToast("Planilha CSV exportada com sucesso!", "success");
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') { appUI.closeModal('lightbox-modal'); appUI.closeModal('details-modal'); }
+                if (document.getElementById('lightbox-modal').className.includes('flex')) {
+                    if (e.key === 'ArrowRight') appLogic.navigateLightbox(1);
+                    if (e.key === 'ArrowLeft') appLogic.navigateLightbox(-1);
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            appLogger.init();
+            setupEventListeners();
+            appLogic.init();
+        });
+        window.addEventListener('online', () => appCloud.pullAndSyncCloud());
+    </script>
+</body>
+</html>
