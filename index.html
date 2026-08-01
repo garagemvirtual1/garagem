@@ -42,10 +42,10 @@
         @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
-<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg">
+<body class="bg-darkBg text-slate-100 min-h-screen flex flex-col font-sans selection:bg-brandGreen selection:text-darkBg overflow-x-hidden">
 
-    <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+    <header class="bg-darkCard/80 backdrop-blur-md border-b border-darkBorder sticky top-0 z-40 px-4 py-3 w-full">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 w-full">
             <div class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-xl bg-slate-950 overflow-hidden border border-darkBorder shadow-lg shadow-brandGreen/5">
                     <img src="icone.png" alt="Garagem Virtual Logo" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/100x100/0F1524/10B981?text=GV'">
@@ -56,29 +56,30 @@
                 </div>
             </div>
             
-            <nav class="flex items-center gap-1 bg-slate-950/60 p-1 rounded-xl border border-darkBorder overflow-x-auto">
-                <button aria-label="Painel Dashboard" onclick="appUI.switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md">
+            <!-- MENU RESPONSIVO (Grid 2x2 no mobile, Linha única no Desktop) -->
+            <nav class="grid grid-cols-2 sm:flex sm:flex-row items-center gap-1.5 bg-slate-950/60 p-1.5 rounded-xl border border-darkBorder w-full sm:w-auto">
+                <button aria-label="Painel Dashboard" onclick="appUI.switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md whitespace-nowrap">
                     <i class="fa-solid fa-chart-pie"></i> Painel
                 </button>
-                <button aria-label="Inventário" onclick="appUI.switchTab('inventario')" id="btn-inventario" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+                <button aria-label="Inventário" onclick="appUI.switchTab('inventario')" id="btn-inventario" class="nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-boxes-stacked"></i> Inventário
                 </button>
-                <button aria-label="Cadastrar Novo Item" onclick="appUI.switchTab('cadastro')" id="btn-cadastro" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
+                <button aria-label="Cadastrar Novo Item" onclick="appUI.switchTab('cadastro')" id="btn-cadastro" class="nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
                     <i class="fa-solid fa-plus"></i> Novo Item
                 </button>
-                <button aria-label="Ajustes e Nuvem" onclick="appUI.switchTab('ajustes')" id="btn-ajustes" class="nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap">
-                    <i class="fa-solid fa-cloud"></i> Config/Nuvem
+                <button aria-label="Ajustes e Nuvem" onclick="appUI.switchTab('ajustes')" id="btn-ajustes" class="nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-cloud"></i> Configurações
                 </button>
             </nav>
 
-            <div id="cloud-status-indicator" class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/40 border border-darkBorder text-xs text-blue-400 font-medium whitespace-nowrap" aria-live="polite">
+            <div id="cloud-status-indicator" class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/40 border border-darkBorder text-xs text-blue-400 font-medium whitespace-nowrap w-full sm:w-auto" aria-live="polite">
                 <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                 <span id="status-text">Modo Local Ativo</span>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6 overflow-hidden">
         
         <!-- DASHBOARD -->
         <section id="tab-dashboard" class="tab-content space-y-6">
@@ -164,7 +165,7 @@
             
             <div id="inventory-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
 
-            <div id="inventory-table-container" class="hidden overflow-x-auto border border-darkBorder rounded-xl bg-darkCard">
+            <div id="inventory-table-container" class="hidden overflow-x-auto border border-darkBorder rounded-xl bg-darkCard w-full">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-slate-950 text-slate-300 text-xs uppercase tracking-wider font-semibold border-b border-darkBorder">
@@ -219,7 +220,7 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label for="form-series-number" class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série</label>
+                            <label for="form-series-number" class="block text-xs font-bold uppercase text-slate-400 tracking-wider mb-1">Nº na Série (Ex: 1/5)</label>
                             <input type="text" id="form-series-number" placeholder="Ex: 1/5" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-slate-200 focus:outline-none focus:border-brandGreen">
                         </div>
                         <div>
@@ -343,11 +344,11 @@
                             <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-upload text-brandGreen"></i> Exportar Garagem</h4>
                             <p class="text-xs text-slate-500 mt-1">Escolha o formato do seu download</p>
                         </div>
-                        <div class="flex gap-2">
-                            <button id="btn-export-csv" class="px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder text-slate-300 font-bold text-xs hover:text-white transition whitespace-nowrap flex items-center justify-center">
+                        <div class="flex gap-2 w-full sm:w-auto">
+                            <button id="btn-export-csv" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder text-slate-300 font-bold text-xs hover:text-white transition whitespace-nowrap flex items-center justify-center">
                                 Excel (.CSV)
                             </button>
-                            <button id="btn-export-json" class="px-4 py-2.5 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-bold text-xs hover:bg-brandGreen/20 transition whitespace-nowrap flex items-center justify-center">
+                            <button id="btn-export-json" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-bold text-xs hover:bg-brandGreen/20 transition whitespace-nowrap flex items-center justify-center">
                                 Cópia (.JSON)
                             </button>
                         </div>
@@ -807,9 +808,9 @@
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
                 document.getElementById('tab-' + tabId).classList.remove('hidden');
                 document.querySelectorAll('.nav-btn').forEach(btn => {
-                    btn.className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center gap-2 whitespace-nowrap";
+                    btn.className = "nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5 sm:gap-2 whitespace-nowrap w-full sm:w-auto";
                 });
-                document.getElementById('btn-' + tabId).className = "nav-btn px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md whitespace-nowrap";
+                document.getElementById('btn-' + tabId).className = "nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md whitespace-nowrap w-full sm:w-auto";
                 if (tabId === 'dashboard') this.calculateMetrics();
                 else if (tabId === 'inventario') this.applyFilters();
             },
