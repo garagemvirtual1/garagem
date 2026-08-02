@@ -56,7 +56,6 @@
                 </div>
             </div>
             
-            <!-- MENU RESPONSIVO (Grid 2x2 no mobile, Linha única no Desktop) -->
             <nav class="grid grid-cols-2 sm:flex sm:flex-row items-center gap-1.5 bg-slate-950/60 p-1.5 rounded-xl border border-darkBorder w-full sm:w-auto">
                 <button aria-label="Painel Dashboard" onclick="appUI.switchTab('dashboard')" id="btn-dashboard" class="nav-btn px-2 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 sm:gap-2 bg-gradient-to-r from-brandGreen to-brandCyan text-darkBg shadow-md whitespace-nowrap">
                     <i class="fa-solid fa-chart-pie"></i> Painel
@@ -74,7 +73,7 @@
 
             <div id="cloud-status-indicator" class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-full bg-slate-950/40 border border-darkBorder text-xs text-blue-400 font-medium whitespace-nowrap w-full sm:w-auto" aria-live="polite">
                 <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <span id="status-text">Modo Local Ativo</span>
+                <span id="status-text">Pronto para Backup Manual</span>
             </div>
         </div>
     </header>
@@ -294,6 +293,13 @@
 
         <!-- CONFIGURAÇÕES E LOGS -->
         <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
+            
+            <!-- ALERTA DE ARQUITETURA MANUAL -->
+            <div class="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-4 flex gap-3 text-sm text-blue-200">
+                <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
+                <p>Para proteger seus dados contra exclusões por perda de conexão, o Google Drive opera apenas em <strong>Modo Manual</strong>. Use os botões abaixo para salvar suas alterações de forma consciente.</p>
+            </div>
+
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Sincronização Google Drive</h2>
                 <div class="grid grid-cols-1 gap-3 bg-slate-950 p-4 rounded-xl border border-darkBorder">
@@ -310,7 +316,7 @@
                 <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div>
                         <p class="text-sm font-bold text-slate-200" id="gdrive-user">Status: Desconectado</p>
-                        <p class="text-xs text-slate-500" id="gdrive-sync-time">Último backup: Nunca</p>
+                        <p class="text-xs text-slate-500" id="gdrive-sync-time">Último backup na nuvem: Não verificado</p>
                     </div>
                     <button id="btn-google-auth" class="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-bold text-sm hover:bg-blue-700 transition flex items-center justify-center gap-2">
                         <i class="fa-brands fa-google"></i> Conectar Google Drive
@@ -318,20 +324,26 @@
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <button id="btn-force-upload" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-brandGreen/20"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio para Nuvem</button>
-                    <button id="btn-force-download" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex items-center justify-center gap-2 transition hover:bg-brandCyan/20"><i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem</button>
+                    <button id="btn-force-upload" class="px-4 py-3 rounded-xl bg-brandGreen/10 text-brandGreen border border-brandGreen/20 font-semibold text-xs flex flex-col items-center justify-center gap-1 transition hover:bg-brandGreen/20">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio (Backup)</span>
+                        <span class="text-[9px] text-brandGreen/60">Sobrescreve a Nuvem</span>
+                    </button>
+                    <button id="btn-force-download" class="px-4 py-3 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-semibold text-xs flex flex-col items-center justify-center gap-1 transition hover:bg-brandCyan/20">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> Puxar Dados (Restaurar)</span>
+                        <span class="text-[9px] text-brandCyan/60">Sobrescreve o Celular</span>
+                    </button>
                 </div>
             </div>
 
             <div class="bg-darkCard border border-darkBorder rounded-2xl p-6 space-y-4">
                 <h2 class="font-display font-bold text-xl">Segurança Manual Local</h2>
-                <p class="text-xs text-slate-400">Exporte ou restaure sua garagem offline.</p>
+                <p class="text-xs text-slate-400">Exporte ou restaure sua garagem offline usando arquivos do celular.</p>
                 
                 <div class="flex flex-col gap-3">
                     <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div>
-                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-download text-brandCyan"></i> Importar Backup</h4>
-                            <p class="text-xs text-slate-500 mt-1">Restaura a garagem (Apenas .JSON)</p>
+                            <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-download text-brandCyan"></i> Importar Backup Local</h4>
+                            <p class="text-xs text-slate-500 mt-1">Restaura a garagem de um arquivo .JSON</p>
                         </div>
                         <input type="file" aria-label="Selecione arquivo JSON" id="file-import-json" accept=".json" class="hidden">
                         <button id="btn-import-json-trigger" onclick="document.getElementById('file-import-json').click()" class="px-6 py-2.5 rounded-xl bg-brandCyan/10 text-brandCyan border border-brandCyan/20 font-bold text-xs hover:bg-brandCyan/20 transition whitespace-nowrap flex items-center justify-center">
@@ -342,7 +354,7 @@
                     <div class="p-4 bg-slate-950 rounded-xl border border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div>
                             <h4 class="text-sm font-bold text-slate-200"><i class="fa-solid fa-upload text-brandGreen"></i> Exportar Garagem</h4>
-                            <p class="text-xs text-slate-500 mt-1">Escolha o formato do seu download</p>
+                            <p class="text-xs text-slate-500 mt-1">Gere um arquivo físico para segurança</p>
                         </div>
                         <div class="flex gap-2 w-full sm:w-auto">
                             <button id="btn-export-csv" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder text-slate-300 font-bold text-xs hover:text-white transition whitespace-nowrap flex items-center justify-center">
@@ -541,7 +553,7 @@
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 
-        let tokenClient = null; let isGoogleAuthenticated = false; let isSyncing = false; let gapiReady = false; let gisReady = false;
+        let tokenClient = null; let isGoogleAuthenticated = false; let gapiReady = false; let gisReady = false;
 
         const appState = {
             colecao: [], customMarcas: [], customEscalas: [], viewMode: 'grid',
@@ -691,8 +703,8 @@
                     appUI.populateSelects();
 
                     appUI.switchTab('inventario'); 
-                    appUI.showToast("Miniatura salva com sucesso!", "success");
-                    await appCloud.pushToCloud();
+                    appUI.showToast("Miniatura salva localmente!", "success");
+                    // REMOVIDO: Sincronização automática perigosa
                 } catch (error) { 
                     appLogger.log("Erro ao salvar: " + error.message); 
                     appUI.showToast("Erro técnico ao salvar. Rascunho mantido seguro.", "error"); 
@@ -731,8 +743,8 @@
                     appUI.renderAll(); 
                     appUI.renderCustomLists();
                     appUI.closeModal('details-modal'); 
-                    appUI.showToast("Registro deletado com sucesso.", "success");
-                    await appCloud.pushToCloud(); 
+                    appUI.showToast("Registro deletado localmente.", "success");
+                    // REMOVIDO: Sincronização automática perigosa
                 } catch (e) { 
                     appLogger.log("Erro Deletar: " + e.message); 
                     appUI.showToast("Falha ao deletar registro.", "error");
@@ -1221,6 +1233,7 @@
                 } catch (e) {
                     appLogger.log("Erro Upload Nuvem: " + (e.message || e));
                     if (e.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
+                    throw e;
                 }
             },
             async pullAndSyncCloud() {
@@ -1228,33 +1241,24 @@
                 isSyncing = true;
                 try {
                     const fileId = await this.getDriveFileId();
-                    if (!fileId) { isSyncing = false; await this.pushToCloud(); return; }
+                    if (!fileId) { isSyncing = false; return; } // Apenas retorna se nao achar arquivo
+                    
                     const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
                     const cloudCollection = res.result;
+                    
                     if (Array.isArray(cloudCollection)) {
-                        let mapColecao = new Map(appState.colecao.map(item => [item.id, item]));
-                        let mudou = false;
-                        cloudCollection.forEach(cItem => {
-                            if (!mapColecao.has(cItem.id)) { mapColecao.set(cItem.id, cItem); mudou = true; } 
-                            else {
-                                const lItem = mapColecao.get(cItem.id);
-                                if ((cItem.lastUpdated || 0) > (lItem.lastUpdated || 0)) { mapColecao.set(cItem.id, cItem); mudou = true; }
-                            }
-                        });
-                        if(mudou) {
-                            const novaColecao = Array.from(mapColecao.values());
-                            await DB.clearAndBulkAdd('colecao', novaColecao);
-                            appState.colecao = novaColecao;
-                            await appLogic.reevaluateAllSeriesStatus();
-                            appUI.renderAll();
-                        }
+                        // Sincronização Estrita: Substitui tudo pelo que está na nuvem ao puxar manualmente
+                        await DB.clearAndBulkAdd('colecao', cloudCollection);
+                        appState.colecao = cloudCollection;
+                        await appLogic.reevaluateAllSeriesStatus();
+                        appUI.renderAll();
                     } else { appLogger.log("Arquivo Nuvem bloqueado por segurança (vazio/corrompido)."); }
                 } catch (e) { 
                     appLogger.log("Erro Sync Download: " + e.message);
                     if (e.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
+                    throw e;
                 }
                 isSyncing = false;
-                if(isGoogleAuthenticated) await this.pushToCloud(); 
             },
             saveCloudKeys() {
                 CLIENT_ID = document.getElementById('cfg-client-id').value.trim();
@@ -1274,9 +1278,6 @@
                         if (savedTokenRaw) {
                             gapi.client.setToken(JSON.parse(savedTokenRaw));
                             isGoogleAuthenticated = true; this.updateCloudUI(true);
-                            this.pullAndSyncCloud().catch((err) => {
-                                if(err && err.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
-                            });
                         }
                     } catch(e) { appLogger.log("Google API Init Error: " + e.message); }
                 });
@@ -1292,7 +1293,6 @@
                                 localStorage.setItem('gdrive_token', JSON.stringify(gapi.client.getToken()));
                                 isGoogleAuthenticated = true; this.updateCloudUI(true); 
                                 appUI.showToast("Google Drive Conectado!", "success");
-                                await this.pullAndSyncCloud(); 
                             } 
                         }); 
                         gisReady = true;
@@ -1306,12 +1306,12 @@
                 const userLabel = document.getElementById('gdrive-user');
                 if (authenticated && isGoogleAuthenticated) {
                     indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-brandGreen/10 border border-brandGreen/20 text-xs text-brandGreen font-medium whitespace-nowrap";
-                    dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Espelhamento Nuvem Ativo";
-                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectado`; if(userLabel) userLabel.textContent = "Status: Integrado ao Drive";
+                    dot.className = "w-2.5 h-2.5 rounded-full bg-brandGreen"; text.textContent = "Pronto para Backup Manual";
+                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectado`; if(userLabel) userLabel.textContent = "Status: Autenticado";
                 } else {
                     indicator.className = "flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium whitespace-nowrap";
                     dot.className = "w-2.5 h-2.5 rounded-full bg-blue-500"; text.textContent = "Modo Local Ativo";
-                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectar Google Drive`; if(userLabel) userLabel.textContent = "Status: Armazenamento Local Isolado";
+                    if(btn) btn.innerHTML = `<i class="fa-brands fa-google"></i> Conectar Google Drive`; if(userLabel) userLabel.textContent = "Status: Desconectado";
                 }
             },
             handleAuthClick() {
@@ -1413,17 +1413,30 @@
 
             document.getElementById('btn-force-upload').addEventListener('click', async () => {
                 if(!navigator.onLine) return appUI.showToast("Sem conexão com a internet.", "error"); 
+                if(!confirm("Atenção! Isso apagará o que está na nuvem e enviará a sua garagem atual. Confirmar?")) return;
                 appUI.setLoading('btn-force-upload', true);
-                await appCloud.pushToCloud(); 
-                appUI.setLoading('btn-force-upload', false, `<i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio para Nuvem`);
-                appUI.showToast("Dados espelhados e salvos no Drive.", "success");
+                try {
+                    await appCloud.pushToCloud(); 
+                    appUI.showToast("Backup enviado para o Drive com sucesso!", "success");
+                } catch(e) {
+                    appUI.showToast("Erro ao fazer backup.", "error");
+                } finally {
+                    appUI.setLoading('btn-force-upload', false, `<span class="flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-up"></i> Forçar Envio (Backup)</span><span class="text-[9px] text-brandGreen/60">Sobrescreve a Nuvem</span>`);
+                }
             });
+            
             document.getElementById('btn-force-download').addEventListener('click', async () => {
                 if(!navigator.onLine) return appUI.showToast("Sem conexão com a internet.", "error"); 
+                if(!confirm("Atenção! Isso apagará a sua garagem atual no celular e baixará o que está na nuvem. Confirmar?")) return;
                 appUI.setLoading('btn-force-download', true);
-                await appCloud.pullAndSyncCloud(); 
-                appUI.setLoading('btn-force-download', false, `<i class="fa-solid fa-cloud-arrow-down"></i> Baixar Dados da Nuvem`);
-                appUI.showToast("Sincronização forçada concluída!", "success");
+                try {
+                    await appCloud.pullAndSyncCloud(); 
+                    appUI.showToast("Dados restaurados do Drive com sucesso!", "success");
+                } catch(e) {
+                    appUI.showToast("Erro ao restaurar do Drive.", "error");
+                } finally {
+                    appUI.setLoading('btn-force-download', false, `<span class="flex items-center gap-2"><i class="fa-solid fa-cloud-arrow-down"></i> Puxar Dados (Restaurar)</span><span class="text-[9px] text-brandCyan/60">Sobrescreve o Celular</span>`);
+                }
             });
             
             document.getElementById('file-import-json').addEventListener('change', (e) => {
@@ -1447,7 +1460,6 @@
                             appUI.populateSelects();
 
                             appUI.showToast("Backup restaurado com sucesso!", "success");
-                            appCloud.pushToCloud(); 
                         }
                     } catch (err) {
                         appLogger.log("Erro na Importação: " + err.message);
@@ -1488,7 +1500,6 @@
             setupEventListeners();
             appLogic.init();
         });
-        window.addEventListener('online', () => appCloud.pullAndSyncCloud());
     </script>
 </body>
 </html>
