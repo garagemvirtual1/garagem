@@ -294,7 +294,6 @@
         <!-- CONFIGURAÇÕES E LOGS -->
         <section id="tab-ajustes" class="tab-content hidden max-w-3xl mx-auto space-y-6">
             
-            <!-- ALERTA DE ARQUITETURA MANUAL -->
             <div class="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-4 flex gap-3 text-sm text-blue-200">
                 <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
                 <p>Para proteger seus dados contra exclusões por perda de conexão, o Google Drive opera apenas em <strong>Modo Manual</strong>. Use os botões abaixo para salvar suas alterações de forma consciente.</p>
@@ -553,7 +552,7 @@
         const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/discovery/v3/rest';
         const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 
-        let tokenClient = null; let isGoogleAuthenticated = false; let gapiReady = false; let gisReady = false;
+        let tokenClient = null; let isGoogleAuthenticated = false; let isSyncing = false; let gapiReady = false; let gisReady = false;
 
         const appState = {
             colecao: [], customMarcas: [], customEscalas: [], viewMode: 'grid',
@@ -565,9 +564,10 @@
             async init() {
                 try {
                     await DB.connect();
-                    await this.loadLists();
                     appState.colecao = await DB.getAll('colecao') || [];
                     await this.garbageCollectTombstones();
+                    
+                    await this.loadLists();
                     
                     appUI.populateSelects();
                     appUI.renderCustomLists();
@@ -587,17 +587,39 @@
                 } catch (e) { appLogger.log("Erro no init: " + e.message); }
             },
             async loadLists() {
-                if (!localStorage.getItem('gv_defaults_seeded_v2')) {
+                if (!localStorage.getItem('gv_defaults_seeded_v3')) {
                     const dMarcas = ['Auto World', 'Greenlight', 'Hot Wheels', 'Jada Toys', 'M2 Machines', 'Maisto', 'Majorette', 'Matchbox', 'Mini GT'];
                     const dEscalas = ['1:18', '1:32', '1:43', '1:64', 'Outra'];
                     for (let m of dMarcas) await DB.put('marcas_custom', {nome: m});
                     for (let e of dEscalas) await DB.put('escalas_custom', {nome: e});
-                    localStorage.setItem('gv_defaults_seeded_v2', 'true');
+                    localStorage.setItem('gv_defaults_seeded_v3', 'true');
                 }
+                
                 const dbMarcas = await DB.getAll('marcas_custom');
                 const dbEscalas = await DB.getAll('escalas_custom');
-                appState.customMarcas = dbMarcas.map(m => m.nome).sort();
-                appState.customEscalas = dbEscalas.map(e => e.nome).sort();
+                
+                let loadedMarcas = dbMarcas.map(m => m.nome);
+                let loadedEscalas = dbEscalas.map(e => e.nome);
+
+                const activeColecao = appState.colecao.filter(i => !i.deleted);
+                
+                // Extração inteligente de marcas e escalas já em uso no inventário (crucial para importação JSON)
+                const usedBrands = activeColecao.map(i => i.brand).filter(Boolean);
+                const usedScales = activeColecao.map(i => i.scale).filter(Boolean);
+
+                const allBrands = Array.from(new Set([...loadedMarcas, ...usedBrands])).sort();
+                const allScales = Array.from(new Set([...loadedEscalas, ...usedScales])).sort();
+
+                // Persiste no banco local para que apareçam na lista de "Gerenciar"
+                for (let b of allBrands) {
+                    if (!loadedMarcas.includes(b)) await DB.put('marcas_custom', {nome: b});
+                }
+                for (let s of allScales) {
+                    if (!loadedEscalas.includes(s)) await DB.put('escalas_custom', {nome: s});
+                }
+
+                appState.customMarcas = allBrands;
+                appState.customEscalas = allScales;
             },
             async garbageCollectTombstones() {
                 const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
@@ -704,7 +726,6 @@
 
                     appUI.switchTab('inventario'); 
                     appUI.showToast("Miniatura salva localmente!", "success");
-                    // REMOVIDO: Sincronização automática perigosa
                 } catch (error) { 
                     appLogger.log("Erro ao salvar: " + error.message); 
                     appUI.showToast("Erro técnico ao salvar. Rascunho mantido seguro.", "error"); 
@@ -741,10 +762,13 @@
                     appState.colecao = await DB.getAll('colecao');
                     await this.reevaluateAllSeriesStatus();
                     appUI.renderAll(); 
+                    
+                    await appLogic.loadLists();
                     appUI.renderCustomLists();
+                    appUI.populateSelects();
+                    
                     appUI.closeModal('details-modal'); 
                     appUI.showToast("Registro deletado localmente.", "success");
-                    // REMOVIDO: Sincronização automática perigosa
                 } catch (e) { 
                     appLogger.log("Erro Deletar: " + e.message); 
                     appUI.showToast("Falha ao deletar registro.", "error");
@@ -888,7 +912,7 @@
                 const bList = document.getElementById('custom-brands-list');
                 bList.innerHTML = '';
                 if(appState.customMarcas.length === 0) {
-                    bList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma marca customizada.</li>';
+                    bList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma marca registrada.</li>';
                 } else {
                     appState.customMarcas.forEach(m => {
                         const isInUse = inUseBrands.has(m);
@@ -905,7 +929,7 @@
                 const sList = document.getElementById('custom-scales-list');
                 sList.innerHTML = '';
                 if(appState.customEscalas.length === 0) {
-                    sList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma escala customizada.</li>';
+                    sList.innerHTML = '<li class="italic text-slate-500 py-1">Nenhuma escala registrada.</li>';
                 } else {
                     appState.customEscalas.forEach(s => {
                         const isInUse = inUseScales.has(s);
@@ -1241,18 +1265,22 @@
                 isSyncing = true;
                 try {
                     const fileId = await this.getDriveFileId();
-                    if (!fileId) { isSyncing = false; return; } // Apenas retorna se nao achar arquivo
+                    if (!fileId) { isSyncing = false; return; }
                     
                     const res = await gapi.client.drive.files.get({ fileId: fileId, alt: 'media' });
                     const cloudCollection = res.result;
                     
                     if (Array.isArray(cloudCollection)) {
-                        // Sincronização Estrita: Substitui tudo pelo que está na nuvem ao puxar manualmente
                         await DB.clearAndBulkAdd('colecao', cloudCollection);
                         appState.colecao = cloudCollection;
                         await appLogic.reevaluateAllSeriesStatus();
+                        
+                        await appLogic.loadLists(); 
+                        appUI.renderCustomLists();
+                        appUI.populateSelects();
+
                         appUI.renderAll();
-                    } else { appLogger.log("Arquivo Nuvem bloqueado por segurança (vazio/corrompido)."); }
+                    } else { appLogger.log("Arquivo Nuvem bloqueado por segurança."); }
                 } catch (e) { 
                     appLogger.log("Erro Sync Download: " + e.message);
                     if (e.status === 401) { isGoogleAuthenticated = false; this.updateCloudUI(false); }
@@ -1452,13 +1480,15 @@
                         if (confirm(`Atenção! Isso substituirá a garagem atual por ${importedData.length} registros importados. Deseja continuar?`)) {
                             await DB.clearAndBulkAdd('colecao', importedData);
                             appState.colecao = await DB.getAll('colecao');
+                            await appLogic.garbageCollectTombstones();
                             await appLogic.reevaluateAllSeriesStatus();
-                            appUI.renderAll();
                             
+                            // A INJEÇÃO DE RECUPERAÇÃO FOI FEITA AQUI (Garante que as marcas voltem ao importar backup)
                             await appLogic.loadLists();
                             appUI.renderCustomLists();
                             appUI.populateSelects();
 
+                            appUI.renderAll();
                             appUI.showToast("Backup restaurado com sucesso!", "success");
                         }
                     } catch (err) {
